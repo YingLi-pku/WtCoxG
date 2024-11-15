@@ -1,0 +1,13 @@
+Package: WtCoxG
+Type: Package
+Title: Applying weighted Cox regression and external allele frequencies to boost powers for time-to-event GWAS
+Version: 0.1.0
+Author: Ying Li, Wenjian Bi, Wei Zhou
+Maintainer: Ying Li <yingli@stu.pku.edu.cn>
+Description: A tool designed for time-to-event GWAS when cases are oversampled.
+License: GPL (>= 2)
+Depends: survival, Matrix,  tidyr, dplyr, dbplyr, mvtnorm, Rcpp,GRAB, R (>= 3.5.0)
+Imports: Rcpp, RcppArmadillo, RcppParallel,  GRAB, survival, data.table, tidyr, dplyr, Matrix, mvtnorm
+LinkingTo: Rcpp, RcppArmadillo, RcppParallel, BH, survival, data.table, tidyr, dplyr, dbplyr, RSQLite, ordinal, Matrix, optparse
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
