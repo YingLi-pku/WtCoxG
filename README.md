@@ -6,9 +6,9 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG")
 library(WtCoxG)
-?WtCoxG  # manual of EmpSPA package
+?WtCoxG  # manual of WtCoxG package
 ```
-Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you meet any problem or suggestions.  
+Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any problem or suggestion!  
 
 ## Introduction of WtCoxG
 **WtCoxG is a Cox-regression based method designed for time-to-event GWAS, which accounts for case ascertainment and gains power by utilizing external allele frequencies (AFs) from publicly available datasets.** WtCoxG consists of three main steps:  
