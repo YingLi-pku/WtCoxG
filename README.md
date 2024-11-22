@@ -46,7 +46,6 @@ We set the external sample sizes to 4,000, 10,000, 50,000, and 200,000. For each
 Simulate-extMAF-norm.R        # R script to simulate external MAFs following Setting1
 Simulate-extMAF-truncnorm.R   # R script to simulate external MAFs following Setting2
 Simulate-extMAF-unif.R        # R script to simulate external MAFs following Setting3
-
 ```
 ### Type I error
 In each scenario, we conduct 1e9 type I error simualtions
