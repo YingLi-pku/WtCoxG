@@ -22,7 +22,7 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 ### We support Dense GRM to adjust for sample relatedness  
 To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
 ## Reproducibility
-Scripts to reproduce the experiments performed for the manuscript: **Applying weighted Cox regression to boost powers for time-to-event genome-wide association studies**  available in the **Simulations** folder.  
+Scripts to reproduce the experiments performed for the manuscript: **Applying weighted Cox regression to boost powers for time-to-event genome-wide association studies**  available in the **SimulationCode** folder.  
 ### Simulation studies
 We conducted extensive numeric simulations to evaluate WtCoxG in terms of type I error rates and powers in the context of case-ascertainment. And We varied the settings of the external sample sizes and batch effect scenarios, and evaluated the power improvement of WtCoxG brought by external MAFs. And we compare WtCoxG with ADuLT, SPACox, GATE and gwasurvivr.  
 ### 1. Simulate Genotype
