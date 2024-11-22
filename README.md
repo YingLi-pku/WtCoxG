@@ -58,7 +58,8 @@ In each scenario, we conduct 1e3 power simualtions
 ```
 power.R
 ```
-
+## References
+Dey, R., Zhou, W., Kiiskinen, T. et al. Efficient and accurate frailty model approach for genome-wide survival association analysis in large-scale biobanks. Nat Commun 13, 5437 (2022). https://doi.org/10.1038/s41467-022-32885-x
 
 
 
