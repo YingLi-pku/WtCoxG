@@ -37,10 +37,10 @@ Simulate-Pheno-Cox.R  # R script to simulate time-to-event phenotypes under Cox 
 Simulate-Pheno-LTM.R  # R script to simulate time-to-event phenotypes under LTM model
 ```
 ### 3. Simulate external MAFs and test for batch effect
-Leveraging external MAFs could boost powers, but potential batch effect between internal and external data is inevitable. Here we simulated external MAFs following a mixed distribution. A proportion of genetic variants are of high quality and free from batch effect, that is, the external MAFs are identical to the internal ones. Meanwhile, the other genetic variants suffer from batch effect and the external MAFs are different from the internal ones. We increase the proportion of the variants with batch effect from 0%, 3%, 12% to 50%. For the variants with batch effect, we considered three settings to simulate external MAFs:  
-- **Setting 1:** a normal distribution N(μ,θ∙μ(1-μ)) with a large variance θ=0.5 (Setting 1A), a normal distribution N(μ,θ) with with a small variance θ=0.01 (Setting 1B)  
-- **Setting 2:** a truncated normal distribution TN(μ,θ∙μ(1-μ), 0, 1)  
-- **Setting 3:** a uniform distribution U(0.1μ,4μ).  
+Leveraging external MAFs could boost powers, but potential batch effect between internal and external data is inevitable. Here we simulated external MAFs $\mu_{ext}$ following a mixed distribution. A proportion of genetic variants are of high quality and free from batch effect, that is, the external MAFs are identical to the internal ones ($\mu_{ext}=\mu$). Meanwhile, the other genetic variants suffer from batch effect and the external MAFs are different from the internal ones. We increase the proportion of the variants with batch effect from 0%, 3%, 12% to 50%. For the variants with batch effect, we considered three settings to simulate external MAFs:  
+- **Setting 1:** a normal distribution $N(\mu,\theta∙\mu(1-\mu))$ with a large variance $\theta=0.5$ (Setting 1A), a normal distribution with with a small variance θ=0.01 (Setting 1B)  
+- **Setting 2:** a truncated normal distribution $TN(\mu,\theta∙\mu(1-\mu),0,1)$  
+- **Setting 3:** a uniform distribution $U(0.1\mu,4\mu)$.  
 We set the external sample sizes to 4,000, 10,000, 50,000, and 200,000. For each setting, we test for batch effect between internal and external MAFs across genome, and estimate the batch effect parameters.
 ```
 Simulate-extMAF-norm.R        # R script to simulate external MAFs following Setting1
