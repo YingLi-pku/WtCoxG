@@ -3,9 +3,9 @@
     "path": "D:/Github/WtCoxG/README.md",
     "project_path": "README.md",
     "type": "markdown",
-    "hash": "2307741461",
+    "hash": "0",
     "contents": "",
-    "dirty": false,
+    "dirty": true,
     "created": 1732238522274.0,
     "source_on_save": false,
     "relative_order": 2,
@@ -14,8 +14,8 @@
         "Source": "Source",
         "rmdVisualMode": "false",
         "rmdVisualModeLocation": "2:0",
-        "cursorPosition": "22,0",
-        "scrollLine": "15",
+        "cursorPosition": "26,0",
+        "scrollLine": "18",
         "rmdVisualCollapsedChunks": ""
     },
     "folds": "",
@@ -23,7 +23,7 @@
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1732240899229,
+    "last_content_update": 1732241835755,
     "read_only": false,
     "read_only_alternatives": []
 }
