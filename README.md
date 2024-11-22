@@ -17,7 +17,14 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 - **Step 2:** we calculate score statistics for each genetic variant. To further boost statistical power, we incorporate external MAFs with batch effect p value > 0.1 into the score statistics. Then we approximate the distribution of the score statistics by Saddle approximation.  
 ![plot](https://github.com/YingLi-pku/WtCoxG/blob/main/Figure/Pipeline.png)  
 ### We support Dense GRM to adjust for sample relatedness  
-Following GATE, we calculate the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
+To account for sample relatedness, we following the strategy of GATE (Rounak Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
+## Reproducibility
+Scripts to reproduce the experiments performed for the manuscript: **Applying weighted Cox regression to boost powers for time-to-event genome-wide association studies**  
+
+
+
+
+
 
 
 
