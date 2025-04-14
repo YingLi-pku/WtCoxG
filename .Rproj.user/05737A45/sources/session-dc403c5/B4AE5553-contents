@@ -7,6 +7,6 @@ Maintainer: Ying Li <yingli@stu.pku.edu.cn>
 Description: A tool designed for time-to-event GWAS when cases are oversampled.
 License: GPL (>= 2)
 Imports: Rcpp, RcppArmadillo,devtools, RcppParallel, survival, data.table, tidyr, dplyr, Matrix, mvtnorm
-Remotes: github::GeneticAnalysisinBiobanks/GRAB@main
+Remotes: github::GeneticAnalysisinBiobanks/GRAB
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
