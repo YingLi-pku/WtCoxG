@@ -4,7 +4,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 ## How to install and load this package
 ```
 library(devtools)  # author version: 0.0.9
-install_github("YingLi-pku/WtCoxG")
+install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
 library(WtCoxG)
 ?WtCoxG  # manual of WtCoxG package
 example(WtCoxG)  # run example
