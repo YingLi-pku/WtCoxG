@@ -1,7 +1,14 @@
 # WtCoxG
 WtCoxG is an accurate, powerful, and computationally efficient Cox-based approach to perform genome-wide time-to-event data analyses in study cohorts with case ascertainment.  
 
-## How to install and load this package
+## Table of contents
+  * [How to install and run WtCoxG](#How-to-install-and-run-WtCoxG)
+  * [Introduction of WtCoxG](#Introduction-of-WtCoxG)
+  * [Step by step workflow](#Step-by-step-workflow)
+  * [Example of slurm scripts](#Example-of-slurm-scripts)
+  * [Reproducibility](#Reproducibility)
+
+## How to install and run WtCoxG
 ```
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
@@ -21,6 +28,11 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 
 ### We support Dense GRM to adjust for sample relatedness  
 To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
+
+## Step by step workflow
+
+## Example of slurm scripts
+
 ## Reproducibility
 Scripts to reproduce the experiments performed for the manuscript: **Applying weighted Cox regression to boost powers for time-to-event genome-wide association studies**  available in the **SimulationCode** folder.  
 ### Simulation studies
