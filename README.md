@@ -2,13 +2,13 @@
 WtCoxG is an accurate, powerful, and computationally efficient Cox-based approach to perform genome-wide time-to-event data analyses in study cohorts with case ascertainment.  
 
 ## Table of contents
-  * [How to install and run WtCoxG](#How-to-install-and-run-WtCoxG)
+  * [How to install WtCoxG](#How-to-install-WtCoxG)
   * [Introduction of WtCoxG](#Introduction-of-WtCoxG)
   * [Step by step workflow](#Step-by-step-workflow)
   * [Example of slurm scripts](#Example-of-slurm-scripts)
   * [Reproducibility](#Reproducibility)
 
-## How to install and run WtCoxG
+## How to install WtCoxG
 ```
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
