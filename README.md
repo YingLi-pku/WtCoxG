@@ -4,7 +4,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 ## Table of contents
   * [How to install WtCoxG](#How-to-install-WtCoxG)
   * [Introduction of WtCoxG](#Introduction-of-WtCoxG)
-  * [Step by step workflow](#Step-by-step-workflow)
+  * [Step-by-step Workflow](#Step-by-step-Workflow)
   * [Example of slurm scripts](#Example-of-slurm-scripts)
   * [Reproducibility](#Reproducibility)
 
@@ -29,7 +29,7 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 ### We support Dense GRM to adjust for sample relatedness  
 To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
 
-## Step by step workflow
+## Step-by-step Workflow
 
 ## Example of slurm scripts
 
