@@ -5,6 +5,10 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
   * [How to install WtCoxG](#How-to-install-WtCoxG)
   * [Introduction of WtCoxG](#Introduction-of-WtCoxG)
   * [Step-by-step Workflow](#Step-by-step-Workflow)
+      * [Setting up input](#Set-up-input)
+      * [Fitting weighted null model](#Fit-weighted-null-model)
+      * [Testing for batch effect](#Test-for-batch-effect)
+      * [Association testing](#Association-testing)
   * [Example of slurm scripts](#Example-of-slurm-scripts)
   * [Reproducibility](#Reproducibility)
 
@@ -31,8 +35,8 @@ To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2
 
 ## Step-by-step Workflow
 ### Set up input
-### Test for batch effect
 ### Fit weighted null model
+### Test for batch effect
 ### Association testing
 
 ## Example of slurm scripts
