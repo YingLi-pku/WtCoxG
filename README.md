@@ -34,9 +34,9 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
 
 ## Step-by-step Workflow
-### Set up input
-### Fit weighted null model
-### Test for batch effect
+### Setting up input
+### Fitting weighted null model
+### Testing for batch effect
 ### Association testing
 
 ## Example of slurm scripts
