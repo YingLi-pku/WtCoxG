@@ -7,8 +7,8 @@
 WtCoxG(
   GenoFile,
   GenoFileIndex = NULL,
+  Geno.mtx = NULL,
   obj.WtCoxG,
-  GRM = NULL,
   OutputFile,
   control = list(AlleleOrder = "ref-first", AllMarkers = T),
   cutoff = 0.1
@@ -18,6 +18,8 @@ WtCoxG(
 \item{GenoFile}{a character of genotype file. See Details section for more details.}
 
 \item{GenoFileIndex}{additional index file(s) corresponding to GenoFile. See Details section for more details.}
+
+\item{Geno.mtx}{a numeric genotype matrix with each row as an individual and each column as a genetic variant.}
 
 \item{obj.WtCoxG}{a object with a class of "QCforBatchEffect"}
 

@@ -5,7 +5,7 @@
 \title{Quality control to check batch effect between study cohort and reference population.}
 \usage{
 QCforBatchEffect(
-  GenoFile,
+  GenoFile = NULL,
   GenoFileIndex = NULL,
   OutputFile,
   control = list(AlleleOrder = "ref-first"),
@@ -13,7 +13,7 @@ QCforBatchEffect(
   RefAfFile,
   RefPrevalence,
   SNPnum = 10000,
-  GRM = NULL
+  sparseGRM = NULL
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ QCforBatchEffect(
 
 \item{SNPnum}{An integer specifying the minimum number of markers. The default is 1e4.}
 
-\item{GRM}{A matrix of genetic relatedness. Default is NULL.}
+\item{sparseGRM}{a three-column sparse GRM file with the first column as "ID1",the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient) without information of distant genetic relatedness (such as population structure).}
 
 \item{RefAFfile}{A character string of the reference file. The reference file must be a \code{txt} file (header required) including at least 7 columns: \code{CHROM}, \code{POS}, \code{ID}, \code{REF}, \code{ALT}, \code{AF_ref}, \code{AN_ref}.}
 
@@ -44,7 +44,7 @@ An R object with a class of "QCforBatchEffect".
 }
 }
 \description{
-This function performs quality control to check the batch effect between a study cohort and a reference population.
+This function performs quality control to test for the batch effect between a study cohort and a reference population. And fit a weighted null model.
 }
 \examples{
 setwd(system.file("", package = "WtCoxG"))

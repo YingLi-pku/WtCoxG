@@ -1,0 +1,26 @@
+{
+    "id": "CA9FB16E",
+    "path": "D:/Github/WtCoxG/R/WtCoxG.R",
+    "project_path": "R/WtCoxG.R",
+    "type": "r_source",
+    "hash": "2985608442",
+    "contents": "",
+    "dirty": false,
+    "created": 1745912166561.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "349,1",
+        "scrollLine": "271"
+    },
+    "folds": "51|2|254|0|\n282|1|296|0|\n302|2|347|0|\n350|86|407|0|\n455|37|526|0|\n474|38|516|2|\n547|2|635|0|\n641|24|644|0|\n646|24|649|0|\n652|24|655|0|\n658|24|661|0|\n663|24|666|0|\n669|24|672|0|\n675|81|690|0|\n694|1|707|0|\n711|1|725|0|\n727|98|748|0|\n764|1|838|0|\n",
+    "lastKnownWriteTime": 1745919978,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1745919978328,
+    "read_only": false,
+    "read_only_alternatives": []
+}
