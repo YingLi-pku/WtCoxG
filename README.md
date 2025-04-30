@@ -6,8 +6,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
   * [Introduction of WtCoxG](#Introduction-of-WtCoxG)
   * [Step-by-step Workflow](#Step-by-step-Workflow)
       * [Setting up input](#Set-up-input)
-      * [Fitting weighted null model](#Fit-weighted-null-model)
-      * [Testing for batch effect](#Test-for-batch-effect)
+      * [Fitting weighted null model and Testing for batch effect](#Fit-weighted-null-model-and-Testing-for-batch-effect)
       * [Association testing](#Association-testing)
   * [Example of slurm scripts](#Example-of-slurm-scripts)
   * [Reproducibility](#Reproducibility)
@@ -17,8 +16,8 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
 library(WtCoxG)
+?QCforBatchEffect
 ?WtCoxG  # manual of WtCoxG package
-example(WtCoxG)  # run example
 ```
 WtCoxG supports both BGEN file and PLINK file.  
 Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any problem or suggestion!  
@@ -34,9 +33,16 @@ Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any pro
 To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2022, Nature communications), which calculates the ratio of the variance of the score statistic with and without GRM. Therefore, when performing the genome-wide scan in Step 2, the score statistic is calibrated using the variance ratio.  
 
 ## Step-by-step Workflow
+In the following examples, we will demonstrate how the package *WtCoxG* can be used to test for batch effect and perform association testing, step by step. We will provide reproducible examples along with explanations of the method and its code, enabling users to experiment with the functions on their own. 
 ### Setting up input
-### Fitting weighted null model
-### Testing for batch effect
+- **Phenotype File**  
+  The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence. 
+- **Genotype File**
+  The current version supports Plink files (.bed), BGEN file (.bgen) and genotype matric.   
+- **External MAF File**
+  The external or reference file must be a .txt file including at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref repreents the external MAF and AN_ref denotes the corresponding allele number.  
+
+### Fitting weighted null model and Testing for batch effect
 ### Association testing
 
 ## Example of slurm scripts
