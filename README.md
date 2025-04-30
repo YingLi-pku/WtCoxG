@@ -129,7 +129,7 @@ Simulate-extMAF-truncnorm.R   # R script to simulate external MAFs following Set
 Simulate-extMAF-unif.R        # R script to simulate external MAFs following Setting3
 ```
 ### 4. GWAS analysis  
-We then apply the WtCoxG package to the simulated data. The following R script provides an example of how to run WtCoxG on a Slurm cluster.
+Next, we use the *WtCoxG* package to analyze the simulated data. Below is an example R script demonstrating how to run WtCoxG on a Slurm cluster.
 ```
 GWAS.R
 ```
