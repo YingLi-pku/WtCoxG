@@ -73,7 +73,8 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                      
                              RefPrevalence = RefPrevalence,                                           # population-level prevalence
                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                      # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
                              
-names(obj.WtCoxG)
+# obj.WtCoxG is a list, containing phenotype data (including residuals of the null model), external MAF data (and its corresponding batch effect p values), and prevalences
+names(obj.WtCoxG)            
 # check the batcheffect p-value and batch effect parameters
 head(obj.WtCoxG$mergeGenoInfo)
 # check the histogram of batch effect p values   
