@@ -7,6 +7,7 @@
 QCforBatchEffect(
   GenoFile = NULL,
   GenoFileIndex = NULL,
+  Geno.mtx = NULL,
   OutputFile,
   control = list(AlleleOrder = "ref-first"),
   PhenoData,

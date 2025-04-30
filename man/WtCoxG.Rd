@@ -55,7 +55,7 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
                              SNPnum=1e4)
 names(obj.WtCoxG)
 #step2: conduct association testing
-WtCoxG(GenoFile = "simuBGEN1.bgen",
+GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
             GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
             obj.WtCoxG = obj.WtCoxG,
             OutputFile = "simuBGEN1.txt",
