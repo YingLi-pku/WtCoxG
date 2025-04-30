@@ -10,9 +10,10 @@ QCforBatchEffect(
   Geno.mtx = NULL,
   OutputFile,
   control = list(AlleleOrder = "ref-first"),
-  PhenoData,
+  PhenoFile,
   RefAfFile,
   RefPrevalence,
+  formula,
   SNPnum = 10000,
   sparseGRM = NULL
 )
@@ -24,7 +25,9 @@ QCforBatchEffect(
 
 \item{control}{A list of parameters to decide which markers to extract. See \code{Details} section for more details.}
 
-\item{PhenoData}{A dataframe that must have at least two columns: \code{SampleID} holds the personal identifiers for all individuals, and \code{Indicator} holds whether the event occurred (0 or 1 or NA).}
+\item{PhenoFile}{A character string of the phenotype file. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.}
+
+\item{formula}{a formula object, with the response on the left of \code{Surv(SurvTime , Indicator) ~ covariates} and the covariates on the right. e.g., \code{Surv(SurvTime , Indicator) ~ Cov1 + Cov2}}
 
 \item{SNPnum}{An integer specifying the minimum number of markers. The default is 1e4.}
 
@@ -58,10 +61,11 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
                              OutputFile = "qcBGEN1.txt",
                              control=list(AlleleOrder = "ref-first",
                                           AllMarkers = T,
-                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
-                             PhenoData=PhenoData,
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID", SurvTimeColumn = "SurvTime"), # specify the column names of sampleID, event, and time
+                             PhenoFile = "simuPHENO_WtSPAG.txt",
                              RefAfFile = "RefMAFs.txt",
                              RefPrevalence = RefPrevalence,
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
                              SNPnum=1e4)
 names(obj.WtCoxG)
 }

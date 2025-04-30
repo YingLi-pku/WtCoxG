@@ -4,9 +4,10 @@
 #'
 #' @param GenoFile A character string of the genotype file. See Details section for more details.
 #' @param GenoFileIndex Additional index file(s) corresponding to GenoFile. See Details section for more details.
-#' @param PhenoData A dataframe that must have at least two columns: \code{SampleID} holds the personal identifiers for all individuals, and \code{Indicator} holds whether the event occurred (0 or 1 or NA).
+#' @param PhenoFile A character string of the phenotype file. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.
 #' @param RefAFfile A character string of the reference file. The reference file must be a \code{txt} file (header required) including at least 7 columns: \code{CHROM}, \code{POS}, \code{ID}, \code{REF}, \code{ALT}, \code{AF_ref}, \code{AN_ref}.
 #' @param RefPrev A numeric value of the event rate in the population.
+#' @param formula a formula object, with the response on the left of \code{Surv(SurvTime , Indicator) ~ covariates} and the covariates on the right. e.g., \code{Surv(SurvTime , Indicator) ~ Cov1 + Cov2}
 #' @param SNPnum An integer specifying the minimum number of markers. The default is 1e4.
 #' @param control A list of parameters to decide which markers to extract. See \code{Details} section for more details.
 #' @param sparseGRM a three-column sparse GRM file with the first column as "ID1",the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient) without information of distant genetic relatedness (such as population structure).
@@ -24,7 +25,6 @@
 #'
 #' @examples
 #' setwd(system.file("", package = "WtCoxG"))
-#' PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)
 #' RefPrevalence = 0.1
 #'
 #' obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
@@ -33,10 +33,11 @@
 #'                              OutputFile = "qcBGEN1.txt",
 #'                              control=list(AlleleOrder = "ref-first",
 #'                                           AllMarkers = T,
-#'                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
-#'                              PhenoData=PhenoData,
+#'                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID", SurvTimeColumn = "SurvTime"), # specify the column names of sampleID, event, and time
+#'                              PhenoFile = "simuPHENO_WtSPAG.txt",
 #'                              RefAfFile = "RefMAFs.txt",
 #'                              RefPrevalence = RefPrevalence,
+#'                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
 #'                              SNPnum=1e4)
 #' names(obj.WtCoxG)
 QCforBatchEffect = function(GenoFile = NULL               # a character of file names of genotype files
@@ -44,15 +45,25 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
                             ,Geno.mtx = NULL
                             ,OutputFile
                             ,control=list(AlleleOrder = "ref-first")
-                            ,PhenoData                    # an R data frame with at least two columns, headers are required and should include c("SampleID", "Indicator"), the "Indicator" column should be 0, 1, or NA.
+                            ,PhenoFile                    # an R data frame with at least two columns, headers are required and should include c("SampleID", "Indicator"), the "Indicator" column should be 0, 1, or NA.
                             ,RefAfFile                    # a character of file name of refInfo, which including at least 7 columns, header are required and should include c("CHROM", "POS", "ID", "REF", "ALT", "AF_ref","AN_ref")
                             ,RefPrevalence                # refernce population prevalence, the proportion of indicator == 1.
+                            ,formula                      # a formula for fitting null model
                             ,SNPnum=1e4                   # default least number of SNPs is 1e4
                             ,sparseGRM = NULL             # sparse genotype relatedness matrix
 
 ){
   if(is.null(OutputFile))
     stop("Argument of 'OutputFile' is required to store information for the follow-up analysis.")
+  if(is.null(PhenoFile))
+    stop("Argument of 'PhenoFile' is required.")
+
+  suppressPackageStartupMessages(library("GRAB",quietly = T))
+  suppressPackageStartupMessages(library("data.table",quietly = T))
+  suppressPackageStartupMessages(library("dplyr",quietly = T))
+  suppressPackageStartupMessages(library("mvtnorm",quietly = T))
+
+  PhenoData = fread(PhenoFile)
 
   # check if there are c("Indicator", "SampleID") in PhenoData-------------------
   if(!is.null(control$IndicatorColumn))
@@ -65,6 +76,16 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
     colnames(PhenoData)[posCol] = "Indicator"
   }
 
+  if(!is.null(control$SurvTimeColumn))
+  {
+    if(!control$SurvTimeColumn %in% colnames(PhenoData))
+      stop(paste0("Cannot find a column of '",
+                  control$SurvTimeColumn,
+                  "' (i.e. control$SurvTimeColumn) in colnames(PhenoData)"))
+    posCol = which(colnames(PhenoData) == control$SurvTimeColumn)
+    colnames(PhenoData)[posCol] = "SurvTime"
+  }
+
   if(!is.null(control$SampleIDColumn))
   {
     if(!control$SampleIDColumn %in% colnames(PhenoData))
@@ -75,6 +96,7 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
     colnames(PhenoData)[posCol] = "SampleID"
   }
 
+
   if(!"Indicator" %in% colnames(PhenoData))
     stop("The column of 'Indicator' is required in PhenoData!")
 
@@ -84,12 +106,11 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
   if(!"SampleID" %in% colnames(PhenoData))
     stop("The column of 'SampleID' is required in PhenoData!")
 
-  #step1: quality control--------------------------------------------------------
-  suppressPackageStartupMessages(library("GRAB",quietly = T))
-  suppressPackageStartupMessages(library("data.table",quietly = T))
-  suppressPackageStartupMessages(library("dplyr",quietly = T))
-  suppressPackageStartupMessages(library("mvtnorm",quietly = T))
+  if(!"SurvTime" %in% colnames(PhenoData))
+    stop("The column of 'SurvTime ' is required in PhenoData!")
 
+
+  #step1: quality control--------------------------------------------------------
   ## reference genoInfo----------------------------------------------------------
   refGenoInfo = fread(RefAfFile)%>%as_tibble()
 
@@ -148,16 +169,18 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
   }
 
   ####fit null model-------------------------------------------------------------------
-  obj.WtSPAG = GRAB.NullModel(Surv(SurvTime, Indicator) ~ Cov1 + Cov2,
+  null.WtSPAG = GRAB.NullModel(formula,
                               data = PhenoData,
                               subjData = SampleID,
                               method = "WtSPAG",
                               traitType = "time-to-event",
                               control = list(RefPrevalence = RefPrevalence))
 
+
   PhenoData = PhenoData %>%
-    mutate(R = obj.WtSPAG$mresid,
-           weight = obj.WtSPAG$weight)
+    mutate(R = null.WtSPAG$mresid,
+           weight = null.WtSPAG$weight)
+  fwrite(PhenoData, file = "simuPHENO_Resid.txt" ,col.names = T, sep = "\t")
 
   ####calculate batch effect p-value for each genetic variant------------------------------------
   w1 = PhenoData$weight/(2*sum(PhenoData$weight))
@@ -424,8 +447,11 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #' @param GenoFile a character of genotype file, .bed file or .bgen file. See Details section for more details.
 #' @param GenoFileIndex additional index file(s) corresponding to GenoFile. See Details section for more details.
 #' @param Geno.mtx a numeric genotype matrix with each row as an individual and each column as a genetic variant.
-#' @param obj.WtCoxG a object with a class of "QCforBatchEffect"
-#' @param control a list of parameters to decide which markers to extract.See \code{Details} section for more details
+#' @param obj.WtCoxG a object with a class of "QCforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.
+#' @param PhenoFile A character string of the phenotype file. In addition to inputting \code{obj.WtCoxG}, users can also provide the \code{PhenoFile}, \code{mergeGenoInfoFile}, and \code{RefPrevalence} separately. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.
+#' @param mergeGenoInfoFile A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::QCforBatchEffect}}
+#' @param RefPrevalence A numeric value of the event rate in the population.
+#' @param control A list of parameters to decide which markers to extract. See \code{Details} section for more details.
 #' @param cutoff a numeric to decide the threshold of batch effect p-value. WtCoxG performs GWAS analysis on variants with batch effect p value exceeding the cutoff. The default is 0.1.
 #' @return an dataframe. including \code{WtCoxG.ext}, which utilizes external MAF, and \code{WtCoxG.noext} without external MAFs
 #'
@@ -446,9 +472,10 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #'                              control=list(AlleleOrder = "ref-first",
 #'                                           AllMarkers = T,
 #'                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
-#'                              PhenoData=PhenoData,
+#'                              PhenoFile = "simuPHENO_WtSPAG.txt",
 #'                              RefAfFile = "RefMAFs.txt",
 #'                              RefPrevalence = RefPrevalence,
+#'                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
 #'                              SNPnum=1e4)
 #' names(obj.WtCoxG)
 #' #step2: conduct association testing
@@ -457,17 +484,37 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #'             obj.WtCoxG = obj.WtCoxG,
 #'             OutputFile = "simuBGEN1.txt",
 #'             control = list(AlleleOrder = "ref-first", AllMarkers=T))
+#'
+#' # Or users can input PhenoFile, mergeGenoInfoFile and RefPrevalence seperately
+#' GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
+#'               GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
+#'               #obj.WtCoxG = obj.WtCoxG,
+#'               PhenoFile = "simuPHENO_Resid.txt",
+#'               mergeGenoInfoFile = "qcBGEN1.txt",
+#'               RefPrevalence = 0.1,
+#'               OutputFile = "simuBGEN1.txt",
+#'               control = list(AlleleOrder = "ref-first", AllMarkers=T))
 WtCoxG = function(GenoFile
-                       , GenoFileIndex = NULL     # additional index file(s) corresponding to GenoFile
-                       , Geno.mtx = NULL          # also support genotype matrix
-                       , obj.WtCoxG               # output list of QCforBatchEffect
+                       , GenoFileIndex = NULL           # additional index file(s) corresponding to GenoFile
+                       , Geno.mtx = NULL                # also support genotype matrix
+                       , obj.WtCoxG = NULL              # output list of QCforBatchEffect
+                       , PhenoFile = NULL
+                       , mergeGenoInfoFile = NULL
+                       , RefPrevalence = NULL
+                       , control = NULL
                        , OutputFile               # output file path
-                       , control=list(AlleleOrder = "ref-first", AllMarkers=T)
                        , cutoff=0.1){
+  library(data.table)
+  if(!is.null(obj.WtCoxG)){
+    PhenoData = obj.WtCoxG$PhenoData
+    mergeGenoInfo = obj.WtCoxG$mergeGenoInfo
+    RefPrevalence = obj.WtCoxG$RefPrevalence
+  }else{
+    PhenoData = fread(PhenoFile)
+    mergeGenoInfo = fread(mergeGenoInfoFile)
+    RefPrevalence = RefPrevalence
+  }
 
-  PhenoData = obj.WtCoxG$PhenoData
-  mergeGenoInfo = obj.WtCoxG$mergeGenoInfo
-  RefPrevalence = obj.WtCoxG$RefPrevalence
 
   if(is.null(Geno.mtx)){
     G = GRAB.ReadGeno(GenoFile = GenoFile

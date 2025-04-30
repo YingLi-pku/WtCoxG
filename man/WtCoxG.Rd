@@ -8,9 +8,12 @@ WtCoxG(
   GenoFile,
   GenoFileIndex = NULL,
   Geno.mtx = NULL,
-  obj.WtCoxG,
+  obj.WtCoxG = NULL,
+  PhenoFile = NULL,
+  mergeGenoInfoFile = NULL,
+  RefPrevalence = NULL,
+  control = NULL,
   OutputFile,
-  control = list(AlleleOrder = "ref-first", AllMarkers = T),
   cutoff = 0.1
 )
 }
@@ -21,9 +24,15 @@ WtCoxG(
 
 \item{Geno.mtx}{a numeric genotype matrix with each row as an individual and each column as a genetic variant.}
 
-\item{obj.WtCoxG}{a object with a class of "QCforBatchEffect"}
+\item{obj.WtCoxG}{a object with a class of "QCforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.}
 
-\item{control}{a list of parameters to decide which markers to extract.See \code{Details} section for more details}
+\item{PhenoFile}{A character string of the phenotype file. In addition to inputting \code{obj.WtCoxG}, users can also provide the \code{PhenoFile}, \code{mergeGenoInfoFile}, and \code{RefPrevalence} separately. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.}
+
+\item{mergeGenoInfoFile}{A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::QCforBatchEffect}}}
+
+\item{RefPrevalence}{A numeric value of the event rate in the population.}
+
+\item{control}{A list of parameters to decide which markers to extract. See \code{Details} section for more details.}
 
 \item{cutoff}{a numeric to decide the threshold of batch effect p-value. WtCoxG performs GWAS analysis on variants with batch effect p value exceeding the cutoff. The default is 0.1.}
 }
@@ -49,9 +58,10 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
                              control=list(AlleleOrder = "ref-first",
                                           AllMarkers = T,
                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
-                             PhenoData=PhenoData,
+                             PhenoFile = "simuPHENO_WtSPAG.txt",
                              RefAfFile = "RefMAFs.txt",
                              RefPrevalence = RefPrevalence,
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
                              SNPnum=1e4)
 names(obj.WtCoxG)
 #step2: conduct association testing
@@ -60,4 +70,14 @@ GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
             obj.WtCoxG = obj.WtCoxG,
             OutputFile = "simuBGEN1.txt",
             control = list(AlleleOrder = "ref-first", AllMarkers=T))
+
+# Or users can input PhenoFile, mergeGenoInfoFile and RefPrevalence seperately
+GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
+              GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
+              #obj.WtCoxG = obj.WtCoxG,
+              PhenoFile = "simuPHENO_Resid.txt",
+              mergeGenoInfoFile = "qcBGEN1.txt",
+              RefPrevalence = 0.1,
+              OutputFile = "simuBGEN1.txt",
+              control = list(AlleleOrder = "ref-first", AllMarkers=T))
 }
