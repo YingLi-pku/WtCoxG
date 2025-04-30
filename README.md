@@ -36,11 +36,23 @@ To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2
 In the following examples, we will demonstrate how the package *WtCoxG* can be used to test for batch effect and perform association testing, step by step. We will provide reproducible examples along with explanations of the method and its code, enabling users to experiment with the functions on their own. 
 ### Setting up input
 - **Phenotype File**
-  The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence. 
+  The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
+```
+library(WtCoxG)
+setwd(system.file("", package = "WtCoxG"))
+PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
+head(PhenoData)
+```
 - **Genotype File**
   The current version supports Plink files (.bed), BGEN file (.bgen) and genotype matric.   
 - **External MAF File**
-  The external file must be a .txt file including at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref repreents the external MAF and AN_ref denotes the corresponding allele number.
+  The external file must include at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref represents the external MAF and AN_ref denotes the corresponding allele number.
+```
+library(WtCoxG)
+setwd(system.file("", package = "WtCoxG"))
+Extdata = fread("RefMAFs.txt")
+head(Extdata)
+```
 - **Reference Prevalence**
   The population disease prevalence, which is availavle from large-scale biobanks and previous studies.
 - **Sparse GRM File**
@@ -51,7 +63,7 @@ First we use the function QCforBatchEffect to fit a weighted null Cox PH  model 
 ```
 library(WtCoxG)
 setwd(system.file("", package = "WtCoxG"))
-PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
+PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)       ## The phenotype file
 RefPrevalence = 0.1                                         ## population prevalence
 
 #step0&1: fit a null model and estimate parameters according to batch effect p values
