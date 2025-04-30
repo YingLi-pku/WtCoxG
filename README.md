@@ -47,7 +47,7 @@ head(PhenoData)
 - **External MAF File**
   The external file must include at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref represents the external MAF and AN_ref denotes the corresponding allele number.
 ```
-Extdata = fread("RefMAFs.txt")
+Extdata = fread("RefMAFs1.txt")
 head(Extdata)
 ```
 - **Reference Prevalence**
@@ -69,7 +69,7 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                      
                                           AllMarkers = T,
                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),     # specify column names, check GRAB:Read.Geno for more details
                              PhenoFile = "simuPHENO_WtSPAG.txt",                                      # path to the phenotype file                  
-                             RefAfFile = "RefMAFs.txt",                                               # path to the external MAF file
+                             RefAfFile = "RefMAFs1.txt",                                               # path to the external MAF file
                              RefPrevalence = RefPrevalence,                                           # population-level prevalence
                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                      # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
                              
