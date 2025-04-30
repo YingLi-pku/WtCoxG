@@ -19,7 +19,7 @@ library(WtCoxG)
 ?QCforBatchEffect
 ?WtCoxG  # manual of WtCoxG package
 ```
-WtCoxG supports both BGEN file and PLINK file.  
+WtCoxG supports BGEN file, PLINK file and genotype matrics as input.  
 Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any problem or suggestion!  
 
 ## Introduction of WtCoxG
