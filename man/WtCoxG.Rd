@@ -59,7 +59,7 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
                                           AllMarkers = T,
                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
                              PhenoFile = "simuPHENO_WtSPAG.txt",
-                             RefAfFile = "RefMAFs.txt",
+                             RefAfFile = "RefMAFs1.txt",
                              RefPrevalence = RefPrevalence,
                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
                              SNPnum=1e4)

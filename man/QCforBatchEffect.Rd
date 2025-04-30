@@ -52,7 +52,6 @@ This function performs quality control to test for the batch effect between a st
 }
 \examples{
 setwd(system.file("", package = "WtCoxG"))
-PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)
 RefPrevalence = 0.1
 
 obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
@@ -63,7 +62,7 @@ obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
                                           AllMarkers = T,
                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID", SurvTimeColumn = "SurvTime"), # specify the column names of sampleID, event, and time
                              PhenoFile = "simuPHENO_WtSPAG.txt",
-                             RefAfFile = "RefMAFs.txt",
+                             RefAfFile = "RefMAFs1.txt",
                              RefPrevalence = RefPrevalence,
                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
                              SNPnum=1e4)

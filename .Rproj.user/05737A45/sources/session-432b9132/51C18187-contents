@@ -1,0 +1,17 @@
+setwd(system.file("", package = "WtCoxG"))
+PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)
+RefPrevalence = 0.1
+#step0&1: fit a null model and estimate parameters according to batch effect p values
+obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN2.bgen",
+                              GenoFileIndex = c("simuBGEN2.bgen.bgi",
+                                                "simuBGEN2.sample"),
+                              OutputFile = "qcBGEN2.txt",
+                              control=list(AlleleOrder = "ref-first",
+                                           AllMarkers = T,
+                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
+                              PhenoFile = "simuPHENO_WtSPAG.txt",
+                              RefAfFile = "RefMAFs2.txt",
+                              RefPrevalence = RefPrevalence,
+                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
+                              SNPnum=1e4)
+names(obj.WtCoxG)

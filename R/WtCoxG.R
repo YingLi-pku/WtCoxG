@@ -35,7 +35,7 @@
 #'                                           AllMarkers = T,
 #'                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID", SurvTimeColumn = "SurvTime"), # specify the column names of sampleID, event, and time
 #'                              PhenoFile = "simuPHENO_WtSPAG.txt",
-#'                              RefAfFile = "RefMAFs.txt",
+#'                              RefAfFile = "RefMAFs1.txt",
 #'                              RefPrevalence = RefPrevalence,
 #'                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
 #'                              SNPnum=1e4)
@@ -45,7 +45,7 @@ QCforBatchEffect = function(GenoFile = NULL               # a character of file 
                             ,Geno.mtx = NULL
                             ,OutputFile
                             ,control=list(AlleleOrder = "ref-first")
-                            ,PhenoFile                    # an R data frame with at least two columns, headers are required and should include c("SampleID", "Indicator"), the "Indicator" column should be 0, 1, or NA.
+                            ,PhenoFile                    # a character of file names of phenotype files
                             ,RefAfFile                    # a character of file name of refInfo, which including at least 7 columns, header are required and should include c("CHROM", "POS", "ID", "REF", "ALT", "AF_ref","AN_ref")
                             ,RefPrevalence                # refernce population prevalence, the proportion of indicator == 1.
                             ,formula                      # a formula for fitting null model
@@ -473,7 +473,7 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #'                                           AllMarkers = T,
 #'                                           IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),
 #'                              PhenoFile = "simuPHENO_WtSPAG.txt",
-#'                              RefAfFile = "RefMAFs.txt",
+#'                              RefAfFile = "RefMAFs1.txt",
 #'                              RefPrevalence = RefPrevalence,
 #'                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
 #'                              SNPnum=1e4)
