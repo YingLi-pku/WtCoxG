@@ -58,8 +58,9 @@ head(Extdata)
 ### Fitting weighted null model and Testing for batch effect
 First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
 ```
-RefPrevalence = 0.1
 #step0&1: fit a null model and estimate parameters according to batch effect p values
+
+RefPrevalence = 0.1                                                                                  # population-level disease prevalence
 obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
                              GenoFileIndex = c("simuBGEN1.bgen.bgi",             
                                                 "simuBGEN1.sample"),                                 # additional index file(s) corresponding to GenoFile
@@ -82,6 +83,7 @@ hist(obj.WtCoxG$mergeGenoInfo$pvalue_bat )
 Next, we perform association testing for variants with batch effect p value > 0.1 by utilizing external MAFs.  
 ```
 #step2: conduct association testing
+
 GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",                                                              # path to the BGEN file
             GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),                                # additional index file(s) corresponding to GenoFile
             obj.WtCoxG = obj.WtCoxG,                                                                    # output list of QCforBatchEffect
