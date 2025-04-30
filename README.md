@@ -36,7 +36,7 @@ To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2
 In the following examples, we will demonstrate how the package *WtCoxG* can be used to test for batch effect and perform association testing, step by step. We will provide reproducible examples along with explanations of the method and its code, enabling users to experiment with the functions on their own. 
 ### 1) Setting up input
 - **Phenotype File**
-  The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
+  The phenotype file must contain at least three columns: sample ID; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
 ```
 setwd(system.file("", package = "WtCoxG"))
 PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
@@ -51,7 +51,7 @@ Extdata = fread("RefMAFs1.txt")
 head(Extdata)
 ```
 - **Reference Prevalence**
-  The population disease prevalence, which is availavle from large-scale biobanks and previous studies.
+  The population disease prevalence, which is available from large-scale biobanks and previous studies.
 - **Sparse GRM File**
   If the study cohort includes related samples, the sparse GRM file is needed, which must contain three columns: the first column as "ID1", the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient between ID1 and ID2).
 
