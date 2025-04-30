@@ -16,8 +16,8 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
 library(WtCoxG)
-?QCforBatchEffect
-?WtCoxG  # manual of WtCoxG package
+?WtCoxG::QCforBatchEffect
+?WtCoxG::WtCoxG  # manual of WtCoxG package
 ```
 WtCoxG supports BGEN file, PLINK file and genotype matrics as input.  
 Please do not hesitate to contact me (yingli@stu.pku.edu.cn) if you have any problem or suggestion!  
