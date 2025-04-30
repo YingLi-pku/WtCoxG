@@ -131,16 +131,6 @@ Simulate-extMAF-norm.R        # R script to simulate external MAFs following Set
 Simulate-extMAF-truncnorm.R   # R script to simulate external MAFs following Setting2
 Simulate-extMAF-unif.R        # R script to simulate external MAFs following Setting3
 ```
-### Type I error
-In each scenario, we conduct 1e9 type I error simualtions
-```
-type1error.R 
-```
-### Power
-In each scenario, we conduct 1e3 power simualtions
-```
-power.R
-```
 ## References
 Dey, R., Zhou, W., Kiiskinen, T. et al. Efficient and accurate frailty model approach for genome-wide survival association analysis in large-scale biobanks. Nat Commun 13, 5437 (2022). https://doi.org/10.1038/s41467-022-32885-x
 
