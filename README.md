@@ -105,7 +105,7 @@ GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
 ## Conducting Simulation Studies on Slurm
 Scripts to reproduce the experiments performed for the manuscript: **Applying weighted Cox regression to boost powers for time-to-event genome-wide association studies**  available in the **SimulationCode** folder.  
 ### Simulation studies
-We conducted extensive numeric simulations to evaluate WtCoxG in terms of type I error rates and powers in the context of case-ascertainment. And We varied the settings of the external sample sizes and batch effect scenarios, and evaluated the power improvement of WtCoxG brought by external MAFs. And we compare WtCoxG with ADuLT, SPACox, GATE and gwasurvivr.  
+We conducted extensive numeric simulations to evaluate WtCoxG in terms of type I error rates and powers in the context of case-ascertainment. And we varied the settings of the external sample sizes and batch effect scenarios, and evaluated the power improvement of WtCoxG brought by external MAFs. And we compare WtCoxG with ADuLT, SPACox, GATE and gwasurvivr.  
 ### 1. Simulate Genotype
 We simulated 60 causal variants and 300,000 null variants following a binomial distribution Binom(2, MAFs), in which MAFs were simulated following a uniform distribution. For both causal and null variants, 1/3 are rare variants simulated following U(0.01,0.05), one-third are low-frequency variants following U(0.05,0.1), and the remaining one-third are common variants following U(0.1,0.5).
 ```
