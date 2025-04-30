@@ -336,7 +336,7 @@ fun.est.param = function(vec_p_bat,
                          vec_cutoff=seq(0.01,0.4,0.1)
 ){
 
-  ########  step1: the propportion of p_bat>cutoff
+  ########  step1: the proportion of p_bat>cutoff
   vec_p_deno=lapply(vec_cutoff,function(p_cut){
     p_deno=mean(na.omit(vec_p_bat>p_cut))
   })%>%unlist()
