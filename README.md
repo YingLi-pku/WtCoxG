@@ -61,23 +61,21 @@ head(Extdata)
 ### Fitting weighted null model and Testing for batch effect
 First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
 ```
-library(WtCoxG)
 setwd(system.file("", package = "WtCoxG"))
-PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)       ## The phenotype file
-RefPrevalence = 0.1                                         ## population prevalence
-
+RefPrevalence = 0.1
 #step0&1: fit a null model and estimate parameters according to batch effect p values
-obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                        # BGEN file
-                             GenoFileIndex = c("simuBGEN1.bgen.bgi",                      
-                                                "simuBGEN1.sample"),
-                             OutputFile = "qcBGEN1.txt",                                          # path of the output file
-                             control = list(AlleleOrder = "ref-first",                     
+obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
+                             GenoFileIndex = c("simuBGEN1.bgen.bgi",             
+                                                "simuBGEN1.sample"),                                 # additional index file(s) corresponding to GenoFile
+                             OutputFile = "qcBGEN1.txt",                                             # path to the output file
+                             control=list(AlleleOrder = "ref-first",
                                           AllMarkers = T,
-                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),  # check ?GRAB:Read.Geno for more details
-                             PhenoData = PhenoData,                                                # phenotype data
-                             RefAfFile = "RefMAFs.txt",
-                             RefPrevalence = RefPrevalence,                                        # population-level prevalence
-                             SNPnum=1e4)                                                           # The least number of valriants needed for estimate batch effect proportion
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),     # specify column names, check GRAB:Read.Geno for more details
+                             PhenoFile = "simuPHENO_WtSPAG.txt",                                      # path to the phenotype file                  
+                             RefAfFile = "RefMAFs.txt",                                               # path to the external MAF file
+                             RefPrevalence = RefPrevalence,                                           # population-level prevalence
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                      # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
+                             
 names(obj.WtCoxG)
 # check the batcheffect p-value and batch effect parameters
 head(obj.WtCoxG$mergeGenoInfo)
@@ -88,12 +86,22 @@ hist(obj.WtCoxG$mergeGenoInfo$pvalue_bat )
 Next, we perform association testing for variants with batch effect p value > 0.1 by utilizing external MAFs.  
 ```
 #step2: conduct association testing
+GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",                                                              # path to the BGEN file
+            GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),                                # additional index file(s) corresponding to GenoFile
+            obj.WtCoxG = obj.WtCoxG,                                                                    # output list of QCforBatchEffect
+            OutputFile = "simuBGEN1.txt",                                                               # the path to the result of QCforBatchEffect
+            control = list(AlleleOrder = "ref-first", AllMarkers=T))                                
+
+# Or users can input PhenoFile, mergeGenoInfoFile and RefPrevalence seperately
+fwrite(obj.WtCoxG$PhenoData, file = "simuPHENO_Resid.txt", col.names=T, sep="\t")
 GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
-            GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
-            obj.WtCoxG = obj.WtCoxG,                                                      # the output of the function QCforBatchEffect
-            OutputFile = "simuBGEN1.txt",                                                 # path to save the gwas results
-            control = list(AlleleOrder = "ref-first", AllMarkers=T))
-head(GWAS)
+              GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
+              #obj.WtCoxG = obj.WtCoxG,
+              PhenoFile = "simuPHENO_Resid.txt",                                                          # phenotype data and residual from null model output by function QCforBatchEffect
+              mergeGenoInfoFile = "qcBGEN1.txt",                                                          # external MAFs and their batch effect p-values output by function QCforBatchEffect
+              RefPrevalence = 0.1,
+              OutputFile = "simuBGEN1.txt",
+              control = list(AlleleOrder = "ref-first", AllMarkers=T))
 ```
 
 ## Example of slurm scripts
