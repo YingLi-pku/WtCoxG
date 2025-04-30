@@ -38,7 +38,6 @@ In the following examples, we will demonstrate how the package *WtCoxG* can be u
 - **Phenotype File**
   The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
 ```
-library(WtCoxG)
 setwd(system.file("", package = "WtCoxG"))
 PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
 head(PhenoData)
@@ -48,8 +47,6 @@ head(PhenoData)
 - **External MAF File**
   The external file must include at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref represents the external MAF and AN_ref denotes the corresponding allele number.
 ```
-library(WtCoxG)
-setwd(system.file("", package = "WtCoxG"))
 Extdata = fread("RefMAFs.txt")
 head(Extdata)
 ```
@@ -61,7 +58,6 @@ head(Extdata)
 ### Fitting weighted null model and Testing for batch effect
 First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
 ```
-setwd(system.file("", package = "WtCoxG"))
 RefPrevalence = 0.1
 #step0&1: fit a null model and estimate parameters according to batch effect p values
 obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
