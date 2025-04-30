@@ -3,5 +3,7 @@
 export(Batcheffect.Test)
 export(QCforBatchEffect)
 export(WtCoxG)
+import(dplyr)
+import(mvtnorm)
 import(GRAB)
 import(data.table)

@@ -1,6 +1,6 @@
 #' Quality control to check batch effect between study cohort and reference population.
 #'
-#' This function performs quality control to check the batch effect between a study cohort and a reference population.
+#' This function performs quality control to test for the batch effect between a study cohort and a reference population. And fit a weighted null model.
 #'
 #' @param GenoFile A character string of the genotype file. See Details section for more details.
 #' @param GenoFileIndex Additional index file(s) corresponding to GenoFile. See Details section for more details.
@@ -9,7 +9,7 @@
 #' @param RefPrev A numeric value of the event rate in the population.
 #' @param SNPnum An integer specifying the minimum number of markers. The default is 1e4.
 #' @param control A list of parameters to decide which markers to extract. See \code{Details} section for more details.
-#' @param GRM A matrix of genetic relatedness. Default is NULL.
+#' @param sparseGRM a three-column sparse GRM file with the first column as "ID1",the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient) without information of distant genetic relatedness (such as population structure).
 #' @return An R object with a class of "QCforBatchEffect".
 #' \itemize{
 #'   \item{mergeGenoInfo}: A dataframe of marker info and reference MAF.
@@ -39,15 +39,16 @@
 #'                              RefPrevalence = RefPrevalence,
 #'                              SNPnum=1e4)
 #' names(obj.WtCoxG)
-QCforBatchEffect = function(GenoFile               # a character of file names of genotype files
-                            ,GenoFileIndex = NULL  # additional index file(s) corresponding to GenoFile
+QCforBatchEffect = function(GenoFile = NULL               # a character of file names of genotype files
+                            ,GenoFileIndex = NULL         # additional index file(s) corresponding to GenoFile
+                            ,Geno.mtx = NULL
                             ,OutputFile
                             ,control=list(AlleleOrder = "ref-first")
-                            ,PhenoData             # an R data frame with at least two columns, headers are required and should include c("SampleID", "Indicator"), the "Indicator" column should be 0, 1, or NA.
-                            ,RefAfFile             # a character of file name of refInfo, which including at least 7 columns, header are required and should include c("CHROM", "POS", "ID", "REF", "ALT", "AF_ref","AN_ref")
-                            ,RefPrevalence         # refernce population prevalence, the proportion of indicator == 1.
-                            ,SNPnum=1e4            # default least number of SNPs is 1e4
-                            ,GRM = NULL               # genotype relatedness matrix
+                            ,PhenoData                    # an R data frame with at least two columns, headers are required and should include c("SampleID", "Indicator"), the "Indicator" column should be 0, 1, or NA.
+                            ,RefAfFile                    # a character of file name of refInfo, which including at least 7 columns, header are required and should include c("CHROM", "POS", "ID", "REF", "ALT", "AF_ref","AN_ref")
+                            ,RefPrevalence                # refernce population prevalence, the proportion of indicator == 1.
+                            ,SNPnum=1e4                   # default least number of SNPs is 1e4
+                            ,sparseGRM = NULL             # sparse genotype relatedness matrix
 
 ){
   if(is.null(OutputFile))
@@ -83,12 +84,6 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
   if(!"SampleID" %in% colnames(PhenoData))
     stop("The column of 'SampleID' is required in PhenoData!")
 
-  if(!is.null(GRM)){
-    if(nrow(GRM)!=nrow(PhenoData) | ncol(GRM)!=nrow(PhenoData)){
-      stop(paste0("The dimension of the GRM should be ",nrow(PhenoData)," × ",nrow(PhenoData)))
-    }
-  }
-
   #step1: quality control--------------------------------------------------------
   suppressPackageStartupMessages(library("GRAB",quietly = T))
   suppressPackageStartupMessages(library("data.table",quietly = T))
@@ -105,35 +100,52 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
   }
 
   ## merge sample genoInfo and ref genoInfo--------------------------------------
-  GenoInfo.ctrl = GRAB.getGenoInfo(GenoFile = GenoFile
-                                   ,GenoFileIndex = GenoFileIndex
-                                   ,SampleIDs = with(PhenoData,SampleID[Indicator==0]) # MAF in cases
-                                   ,control = control) %>%
-    rename(mu0 = altFreq, mr0 = missingRate ) %>%
-    select(mu0, mr0)
+  if(is.null(Geno.mtx)){
+    GenoInfo.ctrl = GRAB.getGenoInfo(GenoFile = GenoFile
+                                     ,GenoFileIndex = GenoFileIndex
+                                     ,SampleIDs = with(PhenoData,SampleID[Indicator==0]) # MAF in cases
+                                     ,control = control) %>%
+      rename(mu0 = altFreq, mr0 = missingRate ) %>%
+      select(mu0, mr0)
 
-  if(nrow(GenoInfo.ctrl)<SNPnum)
-    stop("The number of genetic variants < ",SNPnum)
+    if(nrow(GenoInfo.ctrl)<SNPnum)
+      stop("The number of genetic variants < ",SNPnum)
 
-  GenoInfo = GRAB.getGenoInfo(GenoFile = GenoFile
-                              ,GenoFileIndex = GenoFileIndex
-                              ,SampleIDs = with(PhenoData,SampleID[Indicator==1]) # MAF in controls
-                              ,control = control) %>%
-    rename(mu1 = altFreq, mr1 = missingRate) %>%
-    cbind(., GenoInfo.ctrl) %>% as_tibble() %>%
-    mutate(RA = ifelse(REF < ALT, paste0(REF, ALT), paste0(ALT, REF))) %>%
-    mutate(index = 1:n())
+    GenoInfo = GRAB.getGenoInfo(GenoFile = GenoFile
+                                ,GenoFileIndex = GenoFileIndex
+                                ,SampleIDs = with(PhenoData,SampleID[Indicator==1]) # MAF in controls
+                                ,control = control) %>%
+      rename(mu1 = altFreq, mr1 = missingRate) %>%
+      cbind(., GenoInfo.ctrl) %>% as_tibble() %>%
+      mutate(RA = paste0(pmin(REF,ALT), pmax(REF, ALT))) %>%
+      mutate(index = 1:n())
 
-  mergeGenoInfo = refGenoInfo %>%
-    mutate(RA = ifelse(REF < ALT, paste0(REF, ALT), paste0(ALT, REF))) %>%
-    merge(., GenoInfo, by=c("CHROM", "POS", "RA"), all.y=T) %>%
-    rename(REF = REF.y, ALT = ALT.y, ID = ID.y)%>%
-    mutate(AF_ref = ifelse(REF == REF.x, AF_ref, 1-AF_ref  ))%>%
-    select(-REF.x, -ALT.x, -ID.x, -RA) %>%
-    arrange( index )%>%
-    select( -index )%>%
-    mutate( n1=sum(PhenoData$Indicator) * (1 - mr1),
-            n0=sum(1 - PhenoData$Indicator) * (1 - mr0) )
+    mergeGenoInfo = refGenoInfo %>%
+      mutate(RA = paste0(pmin(REF,ALT), pmax(REF, ALT))) %>%
+      merge(., GenoInfo, by=c("CHROM", "POS", "RA"), all.y=T,sort=F) %>%
+      rename(REF = REF.y, ALT = ALT.y, ID = ID.y)%>%
+      mutate(AF_ref = ifelse(REF == REF.x, AF_ref, 1-AF_ref  ))%>%
+      select(-REF.x, -ALT.x, -ID.x, -RA) %>%
+      arrange( index )%>%
+      mutate( n1=sum(PhenoData$Indicator) * (1 - mr1),
+              n0=sum(1 - PhenoData$Indicator) * (1 - mr0) ,
+              mu.int = 0.5*mu1 + 0.5*mu0,
+              mu.int = ifelse(mu.int>0.5, 1-mu.int, mu.int)
+      )
+  }else{
+    GenoInfo = data.frame(ID = colnames(Geno.mtx),
+                          mu0 = apply(Geno.mtx[PhenoData$Indicator==0,], 2 , function(x){mean(na.omit(x)/2)}),
+                          mu1 = apply(Geno.mtx[PhenoData$Indicator==1,], 2 ,  function(x){mean(na.omit(x)/2)}),
+                          n0 = apply(Geno.mtx[PhenoData$Indicator==0,], 2 , function(x){sum(!is.na(x))}),
+                          n1 = apply(Geno.mtx[PhenoData$Indicator==1,], 2 , function(x){sum(!is.na(x))}))%>%
+      mutate(mu.int = 0.5*mu1 + 0.5*mu0,
+             mu.int = ifelse(mu.int>0.5, 1-mu.int, mu.int),
+             index= 1:n()
+      )
+
+    mergeGenoInfo = merge(GenoInfo, refGenoInfo, by = "ID", all.x=T, sort=F )
+
+  }
 
   ####fit null model-------------------------------------------------------------------
   obj.WtSPAG = GRAB.NullModel(Surv(SurvTime, Indicator) ~ Cov1 + Cov2,
@@ -149,14 +161,20 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
 
   ####calculate batch effect p-value for each genetic variant------------------------------------
   w1 = PhenoData$weight/(2*sum(PhenoData$weight))
+  names(w1) = PhenoData$SampleID
   R_tilde = PhenoData$R - mean( PhenoData$R)
-  meanR = mean( PhenoData$R)
-  if(!is.null(GRM)){
-    var.ratio.w0 = (t(w1) %*% GRM %*% w1 + 1/(2*mergeGenoInfo$AN_ref))/(sum(w1^2) + 1/(2*mergeGenoInfo$AN_ref))
-    var.ratio.int = (t(R_tilde) %*% GRM %*% R_tilde)/sum(R_tilde^2)
+  names(R_tilde) = PhenoData$SampleID
+  meanR = mean(PhenoData$R)
 
+  if(!is.null(sparseGRM)){
+    sparseGRM = sparseGRM %>% mutate(cov = Value * w1[as.character(ID1)] * w1[as.character(ID2)],
+                               cov_R = Value * R_tilde[as.character(ID1)] * R_tilde[as.character(ID2)]
+                               )
+    var.ratio.w0 = (sum(sparseGRM$cov) + 1/(2*mergeGenoInfo$AN_ref))/(sum(w1^2) + 1/(2*mergeGenoInfo$AN_ref))
+    var.ratio.int = sum(sparseGRM$cov_R)/sum(R_tilde^2)
 
   }else{var.ratio.w0 = var.ratio.int=1}
+
   mergeGenoInfo = mergeGenoInfo %>%
     mutate(var.ratio.w0 = var.ratio.w0,
            var.ratio.int=var.ratio.int)
@@ -173,17 +191,13 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
   })%>%unlist()
 
   mergeGenoInfo = mergeGenoInfo %>% mutate(pvalue_bat)
+  rm(pvalue_bat)
 
 
 
   ####estimate unknown parameters according to batch effect p-values---------------------------------
-  mergeGenoInfo = mergeGenoInfo %>% mutate(mu.int = (mu0 + mu1)/2,
-                                           mu.int = ifelse(mu.int > 0.5, 1 - mu.int, mu.int),
-                                           index = 1:n())
 
-
-
-  cat("estimate TPR and sigma2--------------\n")
+  cat("Estimate TPR and sigma2--------------\n")
   maf.group = c(seq(0, 0.4, 0.05),max(mergeGenoInfo$mu.int))
   mergeGenoInfo =lapply(1:(length(maf.group)-1), function(i){
     cat(i,"\n")
@@ -200,8 +214,9 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
     n.ext = mean(na.omit(data$AN_ref)[1])/2
     var_mu_ext = mu*(1-mu)/(2*n.ext)
 
-    var_Sbat = ifelse(is.null(GRM), sum(w1^2)*2*mu*(1-mu) + var_mu_ext,
-                      t(w1) %*% GRM %*% w1*2*mu*(1-mu) + var_mu_ext)
+    var_Sbat = ifelse(is.null(sparseGRM), sum(w1^2)*2*mu*(1-mu) + var_mu_ext,
+                      na.omit(mergeGenoInfo$var.ratio.w0)[1] * (sum(w1^2)*2*mu*(1-mu) + var_mu_ext)
+                      )
 
     obj = fun.est.param(vec_p_bat=data.ref$pvalue_bat ,
                         vec_var_Sbat=var_Sbat)
@@ -220,7 +235,18 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
                   , sigma2 = obj$sigma2
                   , TPR = obj$TPR
     )$par[1]
-    data=data%>%cbind(.,TPR, sigma2, w.ext)
+
+    if(is.null(sparseGRM)){
+      var.ratio.ext = 1
+    } else{
+      R_tilde_w = PhenoData$R - mean(PhenoData$R) * w.ext
+      names(R_tilde_w) = PhenoData$SampleID
+      sparseGRM = sparseGRM %>% mutate(cov_Rext = Value * R_tilde_w[as.character(ID1)] * R_tilde_w[as.character(ID2)])
+      var.ratio.ext = (sum(sparseGRM$cov_Rext)  + w.ext^2 * sum(PhenoData$R)^2/n.ext)/(sum(R_tilde_w^2) + w.ext^2 * sum(PhenoData$R)^2/n.ext)
+
+    }
+
+    data=data%>%cbind(.,TPR, sigma2, w.ext, var.ratio.ext)
 
   })%>%
     do.call("rbind",.) %>%
@@ -233,7 +259,7 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
                      row.names = F, col.names = T, quote = F, sep = "\t")
 
   #### output-----------------------------------------------------------
-  return(list(mergeGenoInfo=mergeGenoInfo,
+  return(list(mergeGenoInfo = mergeGenoInfo,
               PhenoData = PhenoData,
               RefPrevalence = RefPrevalence,
               control = control))
@@ -241,13 +267,27 @@ QCforBatchEffect = function(GenoFile               # a character of file names o
 
 
 
-## function to test for batch effect
-Batcheffect.Test = function(n0,         # number of controls
-                            n1,         # number of cases
-                            n.ext,         # number of external dataset
-                            maf0,         # estimated MAF in controls
-                            maf1,         # estimated MAF in cases
-                            maf.ext,         # estimated MAF in external dataset
+## function to test for batch effect--------------------------------------------
+#'Test for batch effect
+#'
+#' This function test for the allele frequency difference between the study cohort and the external datasets.
+#'
+#' @param n0 A numeric. The sample size of cases in the study cohort
+#' @param n1 A numeric. The sample size of controls in the study cohort
+#' @param n.ext A numeric. The sample size of external datasets
+#' @param maf0 A numeric. The MAF of the cases.
+#' @param maf1 A numeric. The MAF of the controls
+#' @param maf.ext A numeric. The MAF of the external datasets.
+#' @param pop.prev A numeric. The population prevalence of the disease.
+#' @param var.ratio A numeric. The variance ratio calculated by sparseGRM.
+#' @return A numeric of batch effect p-value
+#' @export
+Batcheffect.Test = function(n0,                      # number of controls
+                            n1,                      # number of cases
+                            n.ext,                   # number of external dataset
+                            maf0,                    # estimated MAF in controls
+                            maf1,                    # estimated MAF in cases
+                            maf.ext,                 # estimated MAF in external dataset
                             pop.prev,
                             var.ratio=1)
 {
@@ -266,7 +306,7 @@ Batcheffect.Test = function(n0,         # number of controls
   return(p)
 }
 
-#####estimate TPR and sigma2----------------------------------------------------
+#estimate TPR and sigma2----------------------------------------------------
 fun.est.param = function(vec_p_bat,
                          vec_var_Sbat,
                          vec_cutoff=seq(0.01,0.4,0.1)
@@ -317,7 +357,7 @@ fun.est.param = function(vec_p_bat,
   return(var.diff)
 }
 
-###### optimal weight for mu_ext -----------------------------------------------
+#optimal weight for mu_ext -----------------------------------------------
 fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2, TPR){
   b=par[1]
 
@@ -377,15 +417,16 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 
 }
 
-#' WtCoxG method in GRAB package
+#' WtCoxG method in WtCoxG package
 #'
-#' WtCoxG method is an empirical approach to analyzing complex traits (including but not limited to time-to-event trait) by leveraging external MAFs.
+#' WtCoxG method is an association testing approach to analyzing complex traits (including but not limited to time-to-event trait) by leveraging external MAFs.
 #'
-#' @param GenoFile a character of genotype file. See Details section for more details.
+#' @param GenoFile a character of genotype file, .bed file or .bgen file. See Details section for more details.
 #' @param GenoFileIndex additional index file(s) corresponding to GenoFile. See Details section for more details.
+#' @param Geno.mtx a numeric genotype matrix with each row as an individual and each column as a genetic variant.
 #' @param obj.WtCoxG a object with a class of "QCforBatchEffect"
 #' @param control a list of parameters to decide which markers to extract.See \code{Details} section for more details
-#'
+#' @param cutoff a numeric to decide the threshold of batch effect p-value. WtCoxG performs GWAS analysis on variants with batch effect p value exceeding the cutoff. The default is 0.1.
 #' @return an dataframe. including \code{WtCoxG.ext}, which utilizes external MAF, and \code{WtCoxG.noext} without external MAFs
 #'
 #' @details
@@ -411,15 +452,15 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #'                              SNPnum=1e4)
 #' names(obj.WtCoxG)
 #' #step2: conduct association testing
-#' WtCoxG(GenoFile = "simuBGEN1.bgen",
+#' GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
 #'             GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
 #'             obj.WtCoxG = obj.WtCoxG,
 #'             OutputFile = "simuBGEN1.txt",
 #'             control = list(AlleleOrder = "ref-first", AllMarkers=T))
 WtCoxG = function(GenoFile
                        , GenoFileIndex = NULL     # additional index file(s) corresponding to GenoFile
+                       , Geno.mtx = NULL          # also support genotype matrix
                        , obj.WtCoxG               # output list of QCforBatchEffect
-                       , GRM = NULL               # genetic relatedness matrix
                        , OutputFile               # output file path
                        , control=list(AlleleOrder = "ref-first", AllMarkers=T)
                        , cutoff=0.1){
@@ -428,10 +469,12 @@ WtCoxG = function(GenoFile
   mergeGenoInfo = obj.WtCoxG$mergeGenoInfo
   RefPrevalence = obj.WtCoxG$RefPrevalence
 
-  G = GRAB.ReadGeno(GenoFile = GenoFile
+  if(is.null(Geno.mtx)){
+    G = GRAB.ReadGeno(GenoFile = GenoFile
                     ,GenoFileIndex = GenoFileIndex
                     ,SampleIDs = PhenoData$SampleID
                     ,control = control)$GenoMat
+  }else{G = Geno.mtx}
 
 
   ## GWAS analysis ----------------------------------------------------------------------
@@ -454,12 +497,7 @@ WtCoxG = function(GenoFile
     w.ext = mergeGenoInfo$w.ext[i]
     var.ratio.w0 = mergeGenoInfo$var.ratio.w0[i]
     var.ratio.int = mergeGenoInfo$var.ratio.int[i]
-
-    if(!is.null(GRM)){
-      R_tilde = R - mean(R) * w.ext
-      var.ratio0= (t(R_tilde) %*% GRM.ds %*% R_tilde  + w.ext^2 * sum(R)^2/n.ext)/(sum(R_tilde^2) + w.ext^2 * sum(R)^2/n.ext)
-
-    }else{var.ratio0=1}
+    var.ratio0 = mergeGenoInfo$var.ratio.ext[i]
 
     WtCoxG.ext = WtCoxG.test(g = g,
                              R = R,
@@ -467,8 +505,8 @@ WtCoxG = function(GenoFile
                              TPR=TPR,
                              sigma2 = sigma2,
                              b = w.ext,
-                             var.ratio.w0=var.ratio.w0,
-                             var.ratio.w1=var.ratio.w0,
+                             var.ratio.w0 =var.ratio.w0,
+                             var.ratio.w1 = var.ratio.w0,
                              var.ratio0 = var.ratio0,
                              var.ratio1 = var.ratio0,
                              mu.ext = mu.ext,
@@ -493,14 +531,14 @@ WtCoxG = function(GenoFile
   t2=Sys.time()
   print(t2-t1)
 
-
   fwrite(GWAS, file = OutputFile)
+  return(GWAS)
 
 }
 
 
-###SPA method----------------------------------------------------------------------
-#####calculate p-value --------------------------------------------------
+# SPA method----------------------------------------------------------------------
+# calculate p-value --------------------------------------------------
 
 WtCoxG.test = function(g,
                        R,
@@ -509,7 +547,7 @@ WtCoxG.test = function(g,
                        TPR=NA,
                        sigma2=NA,
                        b=0,
-                       var.ratio.int = 1,              ### variance ratio of S.int
+                       var.ratio.int = 1,          ### variance ratio of S.int
                        var.ratio.w0 = 1,           ### variance ratio of S.bat when bathceffect = 0
                        var.ratio.w1 = 1,           ### variance ratio of S.bat when bathceffect = 1
                        var.ratio0 = 1,             ### variance ratio of Score when bathceffect = 0
@@ -608,6 +646,8 @@ WtCoxG.test = function(g,
 }
 
 #############################################################################
+# hidden function----------------------------------------------------------------------
+# MGF function --------------------------------------------------
 library(mvtnorm)
 M_G0 = function(t, MAF){
   re = (1 - MAF + MAF * exp(t))^2
@@ -719,7 +759,7 @@ GetProb_SPA_G = function(MAF, R, s, n.ext, N.all, sumR,var_mu_ext, g.var.est,mea
 }
 
 
-###saddlepoint approximation (SPA) to calicrate the p value in the case that batcheffect = 0 or 1
+#saddlepoint approximation (SPA) to calicrate the p value in the case that batcheffect = 0 or 1
 SPA_G.one.SNP_homo = function(g,                ### genotype vector
                               R,                ### null model residual vector
                               mu.ext = NA,      ### external MAF

@@ -2,7 +2,7 @@
 % Please edit documentation in R/WtCoxG.R
 \name{WtCoxG}
 \alias{WtCoxG}
-\title{WtCoxG method in GRAB package}
+\title{WtCoxG method in WtCoxG package}
 \usage{
 WtCoxG(
   GenoFile,
@@ -15,7 +15,7 @@ WtCoxG(
 )
 }
 \arguments{
-\item{GenoFile}{a character of genotype file. See Details section for more details.}
+\item{GenoFile}{a character of genotype file, .bed file or .bgen file. See Details section for more details.}
 
 \item{GenoFileIndex}{additional index file(s) corresponding to GenoFile. See Details section for more details.}
 
@@ -24,12 +24,14 @@ WtCoxG(
 \item{obj.WtCoxG}{a object with a class of "QCforBatchEffect"}
 
 \item{control}{a list of parameters to decide which markers to extract.See \code{Details} section for more details}
+
+\item{cutoff}{a numeric to decide the threshold of batch effect p-value. WtCoxG performs GWAS analysis on variants with batch effect p value exceeding the cutoff. The default is 0.1.}
 }
 \value{
 an dataframe. including \code{WtCoxG.ext}, which utilizes external MAF, and \code{WtCoxG.noext} without external MAFs
 }
 \description{
-WtCoxG method is an empirical approach to analyzing complex traits (including but not limited to time-to-event trait) by leveraging external MAFs.
+WtCoxG method is an association testing approach to analyzing complex traits (including but not limited to time-to-event trait) by leveraging external MAFs.
 }
 \details{
 \subsection{The details of \code{control} can be seen in \code{?GRAB.ReadGeno}}{
