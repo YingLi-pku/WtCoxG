@@ -9,7 +9,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
       * [Fitting weighted null model and Testing for batch effect](#Fit-weighted-null-model-and-Testing-for-batch-effect)
       * [Association testing](#Association-testing)
   * [Example of slurm scripts](#Example-of-slurm-scripts)
-  * [Reproducibility](#Reproducibility)
+  * [Simulation](#Simulation)
 
 ## How to install WtCoxG
 ```
@@ -35,15 +35,54 @@ To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2
 ## Step-by-step Workflow
 In the following examples, we will demonstrate how the package *WtCoxG* can be used to test for batch effect and perform association testing, step by step. We will provide reproducible examples along with explanations of the method and its code, enabling users to experiment with the functions on their own. 
 ### Setting up input
-- **Phenotype File**  
+- **Phenotype File**
   The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence. 
 - **Genotype File**
   The current version supports Plink files (.bed), BGEN file (.bgen) and genotype matric.   
 - **External MAF File**
-  The external or reference file must be a .txt file including at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref repreents the external MAF and AN_ref denotes the corresponding allele number.  
+  The external file must be a .txt file including at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref repreents the external MAF and AN_ref denotes the corresponding allele number.
+- **Reference Prevalence**
+  The population disease prevalence, which is availavle from large-scale biobanks and previous studies.
+- **Sparse GRM File**
+  If the study cohort includes related samples, the sparse GRM file is needed, which must contain three columns: the first column as "ID1", the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient between ID1 and ID2).
 
 ### Fitting weighted null model and Testing for batch effect
+First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
+```
+library(WtCoxG)
+setwd(system.file("", package = "WtCoxG"))
+PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
+RefPrevalence = 0.1                                         ## population prevalence
+
+#step0&1: fit a null model and estimate parameters according to batch effect p values
+obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                        # BGEN file
+                             GenoFileIndex = c("simuBGEN1.bgen.bgi",                      
+                                                "simuBGEN1.sample"),
+                             OutputFile = "qcBGEN1.txt",                                          # path of the output file
+                             control = list(AlleleOrder = "ref-first",                     
+                                          AllMarkers = T,
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),  # check ?GRAB:Read.Geno for more details
+                             PhenoData = PhenoData,                                                # phenotype data
+                             RefAfFile = "RefMAFs.txt",
+                             RefPrevalence = RefPrevalence,                                        # population-level prevalence
+                             SNPnum=1e4)                                                           # The least number of valriants needed for estimate batch effect proportion
+names(obj.WtCoxG)
+# check the batcheffect p-value and batch effect parameters
+head(obj.WtCoxG$mergeGenoInfo)
+# check the histogram of batch effect p values   
+hist(obj.WtCoxG$mergeGenoInfo$pvalue_bat )                                                         
+```
 ### Association testing
+Next, we perform association testing for variants with batch effect p value > 0.1 by utilizing external MAFs.  
+```
+#step2: conduct association testing
+GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
+            GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
+            obj.WtCoxG = obj.WtCoxG,                                                      # the output of the function QCforBatchEffect
+            OutputFile = "simuBGEN1.txt",                                                 # path to save the gwas results
+            control = list(AlleleOrder = "ref-first", AllMarkers=T))
+head(GWAS)
+```
 
 ## Example of slurm scripts
 
