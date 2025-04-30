@@ -128,6 +128,12 @@ Simulate-extMAF-norm.R        # R script to simulate external MAFs following Set
 Simulate-extMAF-truncnorm.R   # R script to simulate external MAFs following Setting2
 Simulate-extMAF-unif.R        # R script to simulate external MAFs following Setting3
 ```
+### 4. apply WtCoxG to simulated data  
+We then apply the WtCoxG package to the simulated data. The following R script provides an example of how to run WtCoxG on a Slurm cluster.
+```
+GWAS.R
+```
+
 ## References
 Dey, R., Zhou, W., Kiiskinen, T. et al. Efficient and accurate frailty model approach for genome-wide survival association analysis in large-scale biobanks. Nat Commun 13, 5437 (2022). https://doi.org/10.1038/s41467-022-32885-x
 
