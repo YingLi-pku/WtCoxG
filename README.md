@@ -34,7 +34,7 @@ To account for sample relatedness, we follow the strategy of GATE (Dey et al., 2
 
 ## Step-by-step Workflow
 In the following examples, we will demonstrate how the package *WtCoxG* can be used to test for batch effect and perform association testing, step by step. We will provide reproducible examples along with explanations of the method and its code, enabling users to experiment with the functions on their own. 
-### Setting up input
+### 1) Setting up input
 - **Phenotype File**
   The phenotype file must contain at least three columns: personal identifiers for all individuals; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
 ```
@@ -55,7 +55,7 @@ head(Extdata)
 - **Sparse GRM File**
   If the study cohort includes related samples, the sparse GRM file is needed, which must contain three columns: the first column as "ID1", the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient between ID1 and ID2).
 
-### Fitting weighted null model and Testing for batch effect
+### 2) Fitting weighted null model and Testing for batch effect
 First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
 ```
 #step0&1: fit a null model and estimate parameters according to batch effect p values
@@ -80,7 +80,7 @@ head(obj.WtCoxG$mergeGenoInfo)
 # check the histogram of batch effect p values   
 hist(obj.WtCoxG$mergeGenoInfo$pvalue_bat )                                                         
 ```
-### Association testing
+### 3) Association testing
 Next, we perform association testing for variants with batch effect p value > 0.1 by utilizing external MAFs.  
 ```
 #step2: conduct association testing
