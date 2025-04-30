@@ -1,0 +1,112 @@
+# cd /gdata01/user/liying/simulation-2023-04-12/code
+# sbatch -J gwas --partition=bi2 -q low --exclude=node04 --mem=20000M -t 1-0:0 --array=1-1440 -o log/%A_%a.log --wrap='Rscript GWAS.R $SLURM_ARRAY_TASK_ID'
+args=commandArgs(TRUE)
+print(args)
+print(sessionInfo())
+n.cpu=as.numeric(args)
+##########################################
+library(survival)
+library(ggplot2)
+library(patchwork)
+library(reshape2)
+library(data.table)
+library(tidyr)
+library(dplyr)
+library(WtCoxG)
+###################################################################################################
+params = expand.grid(prev = c(0.01,0.05,0.1)                     # disease prevalence
+                     ,h2 = c(0.01, seq(0.012,0.0155,0.0005))
+                     ,n1 = c(2000)                              # ncase=ncontrol
+                     ,bc = c(0, 0.03, 0.12, 0.5)                 # proportion of batch effect
+                     ,theta = c( 0.5 )                     # level of batch effect
+                     ,group=1:10
+)
+h2 = params[n.cpu, "h2"]
+prev = params[n.cpu, "prev"]
+bc= params[n.cpu, "bc"]
+n1= params[n.cpu, "n1"]
+theta=params[n.cpu, "theta"]
+group=params[n.cpu, "group"]
+
+
+load( paste0("./Geno/null_n",n1,
+               ".RData"))
+
+
+lapply(((group-1)*1+ 1):(group*1), function(v){
+    cat("part",part,"v:",v,"-----------------------------------------------------------------------------","\n")
+
+
+    outputfile = paste0("./type1error_n",n1,
+                        "/prev",prev,
+                        "_her",h2,
+                        "_batcheffect",bc,
+                        "_theta",theta,
+                        "_v",v,
+                        ".csv")
+
+
+    if(!file.exists(outputfile)){
+
+    load( paste0("./Geno/prev",prev,
+                 "_her",h2,
+                 "_n",n1,
+                 "_v",v,
+                 ".RData") )
+      #colnames(G.ds.causal) = paste0("causalSNP-", 1:ncol(G.ds.causal))
+    cat("load non causal SNP  -----------------------------------\n")
+
+    load(paste0("./Geno/null_n",n1,
+                  ".RData"))
+
+    G.all = cbind(G.ds.null, G.ds.causal)
+    rm(G.ds.causal, info.SNP, info.SNP.causal)
+    OutputFile =  paste0("./SNPinfo_unif/prev",prev,
+                         "_her",h2,
+                         "_bc",bc,
+                         "_theta",theta,
+                         "_n",n1,
+                         "_v",v,
+                         "_step1.txt")
+    PhenoFile = paste0("./Pheno/prev",prev,
+                       "_her",h2,
+                       "_n",n1,
+                       "_v",v,
+                       ".txt")
+    RefAfFile = paste0("./SNPinfo_unif/prev",prev,
+                       "_her",h2,
+                       "_bc",bc,
+                       "_theta",theta,
+                       "_n",n1,
+                       "_v",v,
+                       ".txt")
+
+    ##step1 Fit null model and test for batch effect--------------------------------
+    obj.WtCoxG = WtCoxG::QCforBatchEffect(Geno.mtx = G.all,
+                                  OutputFile =  OutputFile,
+                                  control=list(IndicatorColumn = "event", SampleIDColumn = "ID", SurvTimeColumn = "time"), # specify the column names of sampleID, event, and time
+                                  PhenoFile = PhenoFile,
+                                  RefAfFile = RefAfFile,
+                                  RefPrevalence = prev,
+                                  formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
+                                  SNPnum=1e4)
+    ##step2 perform GWAS analysis----------------------------------------------------
+    gwasfile = paste0("./gwas/prev",prev,
+                      "_her",h2,
+                      "_bc",bc,
+                      "_theta",theta,
+                      "_n",n1,
+                      "_v",v,
+                      ".txt")
+
+    GWAS = WtCoxG(Geno.mtx = G.all,
+                  obj.WtCoxG = obj.WtCoxG,
+                  OutputFile = gwasfile)
+
+
+    }
+
+
+
+  })
+

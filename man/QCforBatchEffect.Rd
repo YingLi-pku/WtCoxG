@@ -23,6 +23,8 @@ QCforBatchEffect(
 
 \item{GenoFileIndex}{Additional index file(s) corresponding to GenoFile. See Details section for more details.}
 
+\item{Geno.mtx}{a numeric genotype matrix with each row as an individual and each column as a genetic variant.}
+
 \item{control}{A list of parameters to decide which markers to extract. See \code{Details} section for more details.}
 
 \item{PhenoFile}{A character string of the phenotype file. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.}

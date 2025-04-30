@@ -4,6 +4,7 @@
 #'
 #' @param GenoFile A character string of the genotype file. See Details section for more details.
 #' @param GenoFileIndex Additional index file(s) corresponding to GenoFile. See Details section for more details.
+#' @param Geno.mtx a numeric genotype matrix with each row as an individual and each column as a genetic variant.
 #' @param PhenoFile A character string of the phenotype file. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.
 #' @param RefAFfile A character string of the reference file. The reference file must be a \code{txt} file (header required) including at least 7 columns: \code{CHROM}, \code{POS}, \code{ID}, \code{REF}, \code{ALT}, \code{AF_ref}, \code{AN_ref}.
 #' @param RefPrev A numeric value of the event rate in the population.
