@@ -8,8 +8,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
       * [Setting up input](#Set-up-input)
       * [Fitting weighted null model and Testing for batch effect](#Fit-weighted-null-model-and-Testing-for-batch-effect)
       * [Association testing](#Association-testing)
-  * [Example of slurm scripts](#Example-of-slurm-scripts)
-  * [Simulation](#Simulation)
+  * [Conducting Simulation Studies on Slurm](#Conducting-Simulation-Studies-on-Slurm)
 
 ## How to install WtCoxG
 ```
