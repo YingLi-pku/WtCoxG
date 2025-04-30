@@ -28,11 +28,12 @@ mu.causal = c(runif(nSNP.causal/3, 0.01, 0.05),
 G.pop= lapply(mu.causal, function(m){return(rbinom(N,2,m))}) %>%
   do.call("cbind",.) %>% as.matrix()
 rownames(G.pop) = paste0("IID-",1 : N)
-colnames(G.pop) = paste0("SNP-",1 : nSNP.causal)
+colnames(G.pop) = paste0("causalSNP-",1 : nSNP.causal)
 
-info.SNP.causal = data.frame(id = 1:nSNP.causal, trueMAF = mu.causal)
-save( G.pop,info.SNP.causal,
-      file = paste0("./Geno/causal_prev",prev,
+info.SNP.causal = data.frame(id = colnames(G.pop), trueMAF = mu.causal)
+save( G.pop
+     ,info.SNP.causal
+     ,file = paste0("./Geno/causal_prev",prev,
                     "_n",n1,
                     ".RData"))
 rm(G.pop)
@@ -55,9 +56,9 @@ for(part in 1:10){
   G.ds.null= lapply(mu.null, function(m){return(rbinom(n,2,m))}) %>%
     do.call("cbind",.) %>% as.matrix()
   rownames(G.ds.null) = paste0("IID-",1 : n)
-  colnames(G.ds.null) = paste0("SNP-",1 : nSNP.null)
+  colnames(G.ds.null) = paste0("nullSNP-",1 : nSNP.null)
 
-  info.SNP = data.frame(id = 1:nSNP.null, trueMAF = mu.null)
+  info.SNP = data.frame(id = colnames(G.ds.null), trueMAF = mu.null)
   save( G.ds.null,info.SNP,
         file = paste0("./Geno/null_n",n1,
                       "_part",part,
