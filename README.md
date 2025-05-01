@@ -38,7 +38,7 @@ In the following examples, we will demonstrate how the package *WtCoxG* can be u
   The phenotype file must contain at least three columns: sample ID; an indicator of whether the event occured (0 or 1) and the time of event occurrence.
 ```
 setwd(system.file("", package = "WtCoxG"))
-PhenoData = fread("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
+PhenoData = data.table::fread("simuPHENO_WtSPAG.txt", header = T)  ## The phenotype file
 head(PhenoData)
 ```
 - **Genotype File**
@@ -46,7 +46,7 @@ head(PhenoData)
 - **External MAF File**
   The external file must include at least 7 columns: CHROM, POS, ID, REF, ALT, AF_ref, AN_ref. Here, AF_ref represents the external MAF and AN_ref denotes the corresponding allele number.
 ```
-Extdata = fread("RefMAFs1.txt")
+Extdata = data.table::fread("RefMAFs1.txt")
 head(Extdata)
 ```
 - **Reference Prevalence**
