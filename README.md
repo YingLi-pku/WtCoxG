@@ -15,7 +15,7 @@ WtCoxG is an accurate, powerful, and computationally efficient Cox-based approac
 library(devtools)  # author version: 0.0.9
 install_github("YingLi-pku/WtCoxG",dependencies = TRUE)
 library(WtCoxG)
-?WtCoxG::QCforBatchEffect
+?WtCoxG::TestforBatchEffect
 ?WtCoxG::WtCoxG  # manual of WtCoxG package
 ```
 WtCoxG supports BGEN file, PLINK file and genotype matrics as input.  
@@ -55,12 +55,12 @@ head(Extdata)
   If the study cohort includes related samples, the sparse GRM file is needed, which must contain three columns: the first column as "ID1", the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient between ID1 and ID2).
 
 ### 2) Fitting weighted null model and Testing for batch effect
-First we use the function QCforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
+First we use the function TestforBatchEffect to fit a weighted null Cox PH  model and test for the batch effect between internal and external data.
 ```
 #step0&1: fit a null model and estimate parameters according to batch effect p values
 
 RefPrevalence = 0.1                                                                                  # population-level disease prevalence
-obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
+obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
                              GenoFileIndex = c("simuBGEN1.bgen.bgi",             
                                                 "simuBGEN1.sample"),                                 # additional index file(s) corresponding to GenoFile
                              OutputFile = "qcBGEN1.txt",                                             # path to the output file
@@ -86,8 +86,8 @@ Next, we perform association testing for variants with batch effect p value > 0.
 
 GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",                                                              # path to the BGEN file
             GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),                                # additional index file(s) corresponding to GenoFile
-            obj.WtCoxG = obj.WtCoxG,                                                                    # output list of QCforBatchEffect
-            OutputFile = "simuBGEN1.txt",                                                               # the path to the result of QCforBatchEffect
+            obj.WtCoxG = obj.WtCoxG,                                                                    # output list of TestforBatchEffect
+            OutputFile = "simuBGEN1.txt",                                                               # the path to the result of TestforBatchEffect
             control = list(AlleleOrder = "ref-first", AllMarkers=T))                                
 
 # Or users can input PhenoFile, mergeGenoInfoFile and RefPrevalence seperately
@@ -95,8 +95,8 @@ fwrite(obj.WtCoxG$PhenoData, file = "simuPHENO_Resid.txt", col.names=T, sep="\t"
 GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
               GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
               #obj.WtCoxG = obj.WtCoxG,
-              PhenoFile = "simuPHENO_Resid.txt",                                                          # phenotype data and residual from null model output by function QCforBatchEffect
-              mergeGenoInfoFile = "qcBGEN1.txt",                                                          # external MAFs and their batch effect p-values output by function QCforBatchEffect
+              PhenoFile = "simuPHENO_Resid.txt",                                                          # phenotype data and residual from null model output by function TestforBatchEffect
+              mergeGenoInfoFile = "qcBGEN1.txt",                                                          # external MAFs and their batch effect p-values output by function TestforBatchEffect
               RefPrevalence = 0.1,
               OutputFile = "simuBGEN1.txt",
               control = list(AlleleOrder = "ref-first", AllMarkers=T))
