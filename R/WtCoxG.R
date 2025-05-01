@@ -12,7 +12,7 @@
 #' @param SNPnum An integer specifying the minimum number of markers. The default is 1e4.
 #' @param control A list of parameters to decide which markers to extract. See \code{Details} section for more details.
 #' @param sparseGRM a three-column sparse GRM file with the first column as "ID1",the second column as "ID2", and the last column as "Value" (i.e., two times of kinship coefficient) without information of distant genetic relatedness (such as population structure).
-#' @return An R object with a class of "QCforBatchEffect".
+#' @return An R object with a class of "TestforBatchEffect".
 #' \itemize{
 #'   \item{mergeGenoInfo}: A dataframe of marker info and reference MAF.
 #'   \item{cutoff}: A numeric, the cut-off of batch effect.
@@ -28,7 +28,7 @@
 #' setwd(system.file("", package = "WtCoxG"))
 #' RefPrevalence = 0.1
 #'
-#' obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
+#' obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",
 #'                              GenoFileIndex = c("simuBGEN1.bgen.bgi",
 #'                                                 "simuBGEN1.sample"),
 #'                              OutputFile = "qcBGEN1.txt",
@@ -41,7 +41,7 @@
 #'                              formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2,
 #'                              SNPnum=1e4)
 #' names(obj.WtCoxG)
-QCforBatchEffect = function(GenoFile = NULL               # a character of file names of genotype files
+TestforBatchEffect = function(GenoFile = NULL               # a character of file names of genotype files
                             ,GenoFileIndex = NULL         # additional index file(s) corresponding to GenoFile
                             ,Geno.mtx = NULL
                             ,OutputFile
@@ -448,9 +448,9 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #' @param GenoFile a character of genotype file, .bed file or .bgen file. See Details section for more details.
 #' @param GenoFileIndex additional index file(s) corresponding to GenoFile. See Details section for more details.
 #' @param Geno.mtx a numeric genotype matrix with each row as an individual and each column as a genetic variant.
-#' @param obj.WtCoxG a object with a class of "QCforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.
+#' @param obj.WtCoxG a object with a class of "TestforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.
 #' @param PhenoFile A character string of the phenotype file. In addition to inputting \code{obj.WtCoxG}, users can also provide the \code{PhenoFile}, \code{mergeGenoInfoFile}, and \code{RefPrevalence} separately. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.
-#' @param mergeGenoInfoFile A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::QCforBatchEffect}}
+#' @param mergeGenoInfoFile A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::TestforBatchEffect}}
 #' @param RefPrevalence A numeric value of the event rate in the population.
 #' @param control A list of parameters to decide which markers to extract. See \code{Details} section for more details.
 #' @param cutoff a numeric to decide the threshold of batch effect p-value. WtCoxG performs GWAS analysis on variants with batch effect p value exceeding the cutoff. The default is 0.1.
@@ -466,7 +466,7 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 #' PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)
 #' RefPrevalence = 0.1
 #' #step0&1: fit a null model and estimate parameters according to batch effect p values
-#' obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
+#' obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",
 #'                              GenoFileIndex = c("simuBGEN1.bgen.bgi",
 #'                                                 "simuBGEN1.sample"),
 #'                              OutputFile = "qcBGEN1.txt",
@@ -498,7 +498,7 @@ fun.optimalWeight = function(par, pop.prev, R, y, mu1, w , mu, N, n.ext, sigma2,
 WtCoxG = function(GenoFile
                        , GenoFileIndex = NULL           # additional index file(s) corresponding to GenoFile
                        , Geno.mtx = NULL                # also support genotype matrix
-                       , obj.WtCoxG = NULL              # output list of QCforBatchEffect
+                       , obj.WtCoxG = NULL              # output list of TestforBatchEffect
                        , PhenoFile = NULL
                        , mergeGenoInfoFile = NULL
                        , RefPrevalence = NULL

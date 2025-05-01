@@ -24,11 +24,11 @@ WtCoxG(
 
 \item{Geno.mtx}{a numeric genotype matrix with each row as an individual and each column as a genetic variant.}
 
-\item{obj.WtCoxG}{a object with a class of "QCforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.}
+\item{obj.WtCoxG}{a object with a class of "TestforBatchEffect", which is a list of \code{PhenoData}, \code{mergeGenoInfo} and \code{RefPrevalence}.}
 
 \item{PhenoFile}{A character string of the phenotype file. In addition to inputting \code{obj.WtCoxG}, users can also provide the \code{PhenoFile}, \code{mergeGenoInfoFile}, and \code{RefPrevalence} separately. The phenotype file must have at least three columns: the column of personal identifiers for all individuals, the column of whether the event occurred (0 or 1 or NA), the column of the time of occurrence.}
 
-\item{mergeGenoInfoFile}{A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::QCforBatchEffect}}}
+\item{mergeGenoInfoFile}{A character string of the external MAF file, which must be the results of \code{\link{WtCoxG::TestforBatchEffect}}}
 
 \item{RefPrevalence}{A numeric value of the event rate in the population.}
 
@@ -51,7 +51,7 @@ setwd(system.file("", package = "WtCoxG"))
 PhenoData = read.table("simuPHENO_WtSPAG.txt", header = T)
 RefPrevalence = 0.1
 #step0&1: fit a null model and estimate parameters according to batch effect p values
-obj.WtCoxG = QCforBatchEffect(GenoFile = "simuBGEN1.bgen",
+obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",
                              GenoFileIndex = c("simuBGEN1.bgen.bgi",
                                                 "simuBGEN1.sample"),
                              OutputFile = "qcBGEN1.txt",
