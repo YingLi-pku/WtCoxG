@@ -1,5 +1,4 @@
-# cd /lustre/home/2211110003/code
-# sbatch -p C064M0256G --qos=low --ntasks-per-node=1 -J norm -t 1-0:0 --array=1-1080 -o log/%A_%a.log --wrap='Rscript Simulate-extMAF-norm.R $SLURM_ARRAY_TASK_ID'
+# sbatch -J norm -t 1-0:0 --array=1-1080 -o log/%A_%a.log --wrap='Rscript Simulate-extMAF-norm.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
 print(sessionInfo())
