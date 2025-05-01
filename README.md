@@ -59,18 +59,43 @@ First we use the function TestforBatchEffect to fit a weighted null Cox PH  mode
 ```
 #step0&1: fit a null model and estimate parameters according to batch effect p values
 
-RefPrevalence = 0.1                                                                                  # population-level disease prevalence
-obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",                                           # path to the BGEN file
+RefPrevalence = 0.1                                                                                # population-level disease prevalence
+## WtCoxG support BGEN File
+obj.WtCoxG = TestforBatchEffect(GenoFile = "simuBGEN1.bgen",                                       # path to the BGEN file
                              GenoFileIndex = c("simuBGEN1.bgen.bgi",             
-                                                "simuBGEN1.sample"),                                 # additional index file(s) corresponding to GenoFile
-                             OutputFile = "qcBGEN1.txt",                                             # path to the output file
+                                                "simuBGEN1.sample"),                               # additional index file(s) corresponding to GenoFile
+                             OutputFile = "qcBGEN1.txt",                                           # path to the output file
                              control=list(AlleleOrder = "ref-first",
                                           AllMarkers = T,
-                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),     # specify column names, check GRAB:Read.Geno for more details
-                             PhenoFile = "simuPHENO_WtSPAG.txt",                                      # path to the phenotype file                  
-                             RefAfFile = "RefMAFs1.txt",                                               # path to the external MAF file
-                             RefPrevalence = RefPrevalence,                                           # population-level prevalence
-                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                      # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),   # specify column names, check GRAB:Read.Geno for more details
+                             PhenoFile = "simuPHENO_WtSPAG.txt",                                    # path to the phenotype file                  
+                             RefAfFile = "RefMAFs1.txt",                                            # path to the external MAF file
+                             RefPrevalence = RefPrevalence,                                         # population-level prevalence
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                    # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
+
+## also support PLINK file
+obj.WtCoxG = TestforBatchEffect(GenoFile = "GenoMat1.bed",                                         # path to the PLINK file
+                             GenoFileIndex = c("GenoMat1.bim", "GenoMat1.fam"),                    # additional index file(s) corresponding to GenoFile
+                             OutputFile = "qcBGEN1.txt",                                           # path to the output file
+                             control=list(AlleleOrder = "ref-first",
+                                          AllMarkers = T,
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),   # specify column names, check GRAB:Read.Geno for more details
+                             PhenoFile = "simuPHENO_WtSPAG.txt",                                    # path to the phenotype file                  
+                             RefAfFile = "RefMAFs1.txt",                                            # path to the external MAF file
+                             RefPrevalence = RefPrevalence,                                         # population-level prevalence
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                    # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
+
+## we also support genotype matrics
+load("GenoMat.RData")                                                                              # load genotype matrics
+obj.WtCoxG = TestforBatchEffect(Geno.mtx = G,                                                      # support genotype matric
+                             OutputFile = "qcBGEN1.txt",                                           # path to the output file
+                             control=list(AlleleOrder = "ref-first",
+                                          AllMarkers = T,
+                                          IndicatorColumn = "SurvEvent", SampleIDColumn = "IID"),   # specify column names, check GRAB:Read.Geno for more details
+                             PhenoFile = "simuPHENO_WtSPAG.txt",                                    # path to the phenotype file                  
+                             RefAfFile = "RefMAFs1.txt",                                            # path to the external MAF file
+                             RefPrevalence = RefPrevalence,                                         # population-level prevalence
+                             formula = Surv(SurvTime , Indicator) ~ Cov1 + Cov2)                    # formula of the null model, users can substite Cov1 and Cov2 with other covariates as needed.
                              
 # obj.WtCoxG is a list, containing phenotype data (including residuals of the null model), external MAF data (and its corresponding batch effect p values), and prevalences
 names(obj.WtCoxG)            
@@ -84,10 +109,10 @@ Next, we perform association testing for variants with batch effect p value > 0.
 ```
 #step2: conduct association testing
 
-GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",                                                              # path to the BGEN file
-            GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),                                # additional index file(s) corresponding to GenoFile
-            obj.WtCoxG = obj.WtCoxG,                                                                    # output list of TestforBatchEffect
-            OutputFile = "simuBGEN1.txt",                                                               # the path to the result of TestforBatchEffect
+GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",                                               # path to the BGEN file. We also support PLINK file and Matrix data
+            GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),                 # additional index file(s) corresponding to GenoFile
+            obj.WtCoxG = obj.WtCoxG,                                                     # output list of TestforBatchEffect
+            OutputFile = "simuBGEN1.txt",                                                # the path to the result of TestforBatchEffect
             control = list(AlleleOrder = "ref-first", AllMarkers=T))                                
 
 # Or users can input PhenoFile, mergeGenoInfoFile and RefPrevalence seperately
@@ -95,8 +120,8 @@ fwrite(obj.WtCoxG$PhenoData, file = "simuPHENO_Resid.txt", col.names=T, sep="\t"
 GWAS = WtCoxG(GenoFile = "simuBGEN1.bgen",
               GenoFileIndex = c("simuBGEN1.bgen.bgi", "simuBGEN1.sample"),
               #obj.WtCoxG = obj.WtCoxG,
-              PhenoFile = "simuPHENO_Resid.txt",                                                          # phenotype data and residual from null model output by function TestforBatchEffect
-              mergeGenoInfoFile = "qcBGEN1.txt",                                                          # external MAFs and their batch effect p-values output by function TestforBatchEffect
+              PhenoFile = "simuPHENO_Resid.txt",                                          # phenotype data and residual from null model output by function TestforBatchEffect
+              mergeGenoInfoFile = "qcBGEN1.txt",                                          # external MAFs and their batch effect p-values output by function TestforBatchEffect
               RefPrevalence = 0.1,
               OutputFile = "simuBGEN1.txt",
               control = list(AlleleOrder = "ref-first", AllMarkers=T))
