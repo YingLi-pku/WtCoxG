@@ -1,5 +1,4 @@
-# cd /gdata01/user/liying/simulation-2023-04-12/code
-# sbatch --partition=bi1 --exclude=node03,node02 -J Power --mem=12000M -t 1-0:0 --array=1-60 -o log/%A_%a.log --wrap='Rscript power0620.R $SLURM_ARRAY_TASK_ID'
+# sbatch -J Power --mem=12000M -t 1-0:0 --array=1-60 -o log/%A_%a.log --wrap='Rscript power.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
 print(sessionInfo())
