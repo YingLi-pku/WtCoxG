@@ -1,4 +1,4 @@
-# sbatch -J gwas --partition=bi2 -q low --exclude=node04 --mem=20000M -t 1-0:0 --array=1-1440 -o log/%A_%a.log --wrap='Rscript GWAS.R $SLURM_ARRAY_TASK_ID'
+# sbatch -J gwas --mem=20000M -t 1-0:0 --array=1-1440 -o log/%A_%a.log --wrap='Rscript GWAS.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
 print(sessionInfo())
