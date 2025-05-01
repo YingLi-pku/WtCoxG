@@ -82,7 +82,7 @@ lapply(((group-1)*1+ 1):(group*1), function(v){
                        ".txt")
 
     ##step1 Fit null model and test for batch effect--------------------------------
-    obj.WtCoxG = WtCoxG::QCforBatchEffect(Geno.mtx = G.all,
+    obj.WtCoxG = WtCoxG::TestforBatchEffect(Geno.mtx = G.all,
                                   OutputFile =  OutputFile,
                                   control=list(IndicatorColumn = "event", SampleIDColumn = "ID", SurvTimeColumn = "time"), # specify the column names of sampleID, event, and time
                                   PhenoFile = PhenoFile,
