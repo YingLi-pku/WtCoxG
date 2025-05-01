@@ -5,13 +5,6 @@ print(args)
 print(sessionInfo())
 n.cpu=as.numeric(args)
 ##########################################
-library(survival)
-library(ggplot2)
-library(patchwork)
-library(reshape2)
-library(data.table)
-library(tidyr)
-library(dplyr)
 library(WtCoxG)
 ###################################################################################################
 params = expand.grid(prev = c(0.01,0.05,0.1)                     # disease prevalence
