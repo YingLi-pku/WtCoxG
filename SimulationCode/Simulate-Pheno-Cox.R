@@ -5,15 +5,9 @@ print(args)
 print(sessionInfo())
 n.cpu=as.numeric(args)
 ##########################################
-
-library(survival)
-library(ggplot2)
-library(patchwork)
-library(reshape2)
 library(data.table)
 library(tidyr)
 library(dplyr)
-library(LTFHPlus)
 
 #### lower function to estimate beta0 given an event rate. Will be used in data.simu.surv().
 f.surv = function(N,                  # Sample size
