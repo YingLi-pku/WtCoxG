@@ -1,5 +1,5 @@
 # cd /gdata01/user/liying/simulation-2023-04-12/code
-# sbatch -J SimuPheno --partition=bi1 --exclude=node03,node02 --mem=4000M -t 1-0:0 --array=1-75 -o log/%A_%a.log --wrap='Rscript Generate-Pheno-LTM.R $SLURM_ARRAY_TASK_ID'
+# sbatch -J SimuPheno --mem=4000M -t 1-0:0 --array=1-75 -o log/%A_%a.log --wrap='Rscript Simulate-Pheno-LTM.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
 print(sessionInfo())
