@@ -1,5 +1,3 @@
-# source activate myEnvR
-# cd /gdata01/user/liying/simulation-2023-04-12/code
 # sbatch -J geno --partition=bi1 --mem=20000M -t 1-0:0 --array=1-1 -o log/%A_%a.log --wrap='Rscript Generate-Geno-0620.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
