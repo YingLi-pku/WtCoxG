@@ -3,24 +3,24 @@
     "path": "D:/Github/WtCoxG/R/WtCoxG.R",
     "project_path": "R/WtCoxG.R",
     "type": "r_source",
-    "hash": "3617903657",
+    "hash": "0",
     "contents": "",
-    "dirty": false,
+    "dirty": true,
     "created": 1744640970481.0,
     "source_on_save": false,
     "relative_order": 2,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "30,34",
-        "scrollLine": "0"
+        "cursorPosition": "536,13",
+        "scrollLine": "520"
     },
     "folds": "55|2|289|0|\n316|1|330|0|\n336|2|381|0|\n384|86|441|0|\n",
     "lastKnownWriteTime": 1746066745,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1746066745269,
+    "last_content_update": 1746068057422,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -506,6 +506,7 @@ WtCoxG = function(GenoFile
                        , OutputFile               # output file path
                        , cutoff=0.1){
   library(data.table)
+  library(GRAB)
   if(!is.null(obj.WtCoxG)){
     PhenoData = obj.WtCoxG$PhenoData
     mergeGenoInfo = obj.WtCoxG$mergeGenoInfo
