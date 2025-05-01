@@ -1,5 +1,4 @@
-# cd /gdata01/user/liying/simulation-2023-04-12/code
-# sbatch -J SimuPheno --mem=4000M -t 1-0:0 --array=1-1500 -o log/%A_%a.log --wrap='Rscript Generate-Pheno-0620.R $SLURM_ARRAY_TASK_ID'
+# sbatch -J SimuPheno --mem=4000M -t 1-0:0 --array=1-1500 -o log/%A_%a.log --wrap='Rscript Simulate-Pheno-Cox.R $SLURM_ARRAY_TASK_ID'
 args=commandArgs(TRUE)
 print(args)
 print(sessionInfo())
