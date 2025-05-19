@@ -1,5 +1,5 @@
 # step1: fit null model and calculate batch effect p-values
-docker run -v /gdata01/user/liying/docker/WtCoxG/inst/:/test \
+docker run -v /WtCoxG/inst/:/test \
   wtcoxg Rscript WtCoxG_step1.R \
   --GenoFile=/test/GenoMat2.bed \
   --GenoMarkerIndexFile=/test/GenoMat2.bim \
@@ -14,7 +14,7 @@ docker run -v /gdata01/user/liying/docker/WtCoxG/inst/:/test \
   --OutputFile=/test/dockertest1 
 
 # step2: gwas
-docker run -v /gdata01/user/liying/docker/WtCoxG/inst/:/test \
+docker run -v /WtCoxG/inst/:/test \
   wtcoxg Rscript WtCoxG_step2.R \
   --GenoFile=/test/GenoMat2.bed \
   --objWtCoxGFile=/test/dockertest1.RData \
