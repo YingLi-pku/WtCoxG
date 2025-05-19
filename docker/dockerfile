@@ -1,4 +1,4 @@
-# cd /gdata01/user/liying/docker/
+# cd /docker/
 # docker build -t wtcoxg -f ./dockerfile .
 # docker push wtcoxg
 # docker save wtcoxg > wtcoxg.tar
