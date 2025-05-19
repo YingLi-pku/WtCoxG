@@ -1,0 +1,44 @@
+# cd /gdata01/user/liying/docker/
+# docker build -t wtcoxg -f ./dockerfile .
+# docker push wtcoxg
+# docker save wtcoxg > wtcoxg.tar
+# gzip wtcoxg.tar
+# docker run -it wtcoxg /bin/bash
+
+
+FROM rocker/r-ver:4.3.1
+
+LABEL maintainer="yingli@pku.edu.cn"
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    zlib1g-dev \
+    libzstd-dev \
+    libglpk-dev \
+    r-cran-devtools \
+    gfortran \
+    build-essential \
+    fonts-dejavu \
+    libfontconfig1-dev \
+    libglu1-mesa-dev \
+    git \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
+# set work direction
+WORKDIR /app
+
+# install remotes
+RUN R -e "options(repos = c(CRAN = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')); install.packages('remotes',update='never')"
+
+
+# install WtCoxG
+RUN R -e "remotes::install_github('YingLi-pku/WtCoxG', dependencies = TRUE, upgrade = 'never')"
+
+
+COPY WtCoxG_step1.R .
+COPY WtCoxG_step2.R .
+
