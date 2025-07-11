@@ -223,7 +223,7 @@ TestforBatchEffect = function(GenoFile = NULL               # a character of fil
   ####estimate unknown parameters according to batch effect p-values---------------------------------
 
   cat("Estimate TPR and sigma2--------------\n")
-  maf.group = c(seq(0, 0.4, 0.05),max(mergeGenoInfo$mu.int))
+  maf.group = c(seq(-0.00001, 0.4, 0.05),max(mergeGenoInfo$mu.int))
   mergeGenoInfo =lapply(1:(length(maf.group)-1), function(i){
     cat(i,"\n")
 
