@@ -148,7 +148,7 @@ TestforBatchEffect = function(GenoFile = NULL               # a character of fil
       rename(REF = REF.y, ALT = ALT.y, ID = ID.y)%>%
       mutate(AF_ref = ifelse(REF == REF.x, AF_ref, 1-AF_ref  ))%>%
       select(-REF.x, -ALT.x, -ID.x, -RA) %>%
-      arrange( index )%>%
+      filter( !duplicated(index) )%>%
       mutate( n1=sum(PhenoData$Indicator) * (1 - mr1),
               n0=sum(1 - PhenoData$Indicator) * (1 - mr0) ,
               mu.int = 0.5*mu1 + 0.5*mu0,
@@ -165,7 +165,8 @@ TestforBatchEffect = function(GenoFile = NULL               # a character of fil
              index= 1:n()
       )
 
-    mergeGenoInfo = merge(GenoInfo, refGenoInfo, by = "ID", all.x=T, sort=F )
+    mergeGenoInfo = merge(GenoInfo, refGenoInfo, by = "ID", all.x=T, sort=F )%>%
+      filter( !duplicated(index) )
 
   }
 
